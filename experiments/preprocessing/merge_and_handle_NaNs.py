@@ -19,8 +19,9 @@ def fill_missing_values_shop_sales(initial_df):
     df['item_id'] = df['item_id'].astype(str)
     df['store_id'] = df['store_id'].astype(str)
     df['cnt'] = pd.to_numeric(df['cnt'], errors='coerce').astype(float)
-    max_date_id = df['date_id'].max() 
     df['date_id'] = df['date_id'].interpolate()
+    max_date_id = df['date_id'].max() 
+
 
     if df['item_id'].isna().sum() > 0:  
         for i in range(len(df)):
