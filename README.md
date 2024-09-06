@@ -43,3 +43,7 @@ Backend
 ```
 fastapi dev main.py
 ```
+Or uncomment end of file main.py and use
+```
+python main.py
+```
