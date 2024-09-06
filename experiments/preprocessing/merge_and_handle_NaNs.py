@@ -12,60 +12,118 @@ def load_dataset(df_name):
     except (FileNotFoundError, pd.errors.EmptyDataError, pd.errors.ParserError, UnicodeDecodeError) as e:
         raise ValueError(f"Error loading file '{df_name}': {e}")
 
-def fill_missing_values_shop_sales(df):
+def fill_missing_values_shop_sales(initial_df):
+
+    df = initial_df.reset_index(drop=True)
+    df['date_id'] = pd.to_numeric(df['date_id'], errors='coerce').astype(float)
+    df['item_id'] = df['item_id'].astype(str)
+    df['store_id'] = df['store_id'].astype(str)
+    df['cnt'] = pd.to_numeric(df['cnt'], errors='coerce').astype(float)
+    max_date_id = df['date_id'].max() 
+    df['date_id'] = df['date_id'].interpolate()
+
+    if df['item_id'].isna().sum() > 0:  
+        for i in range(len(df)):
+            if pd.isna(df.at[i, 'item_id']):
+                if df.at[i, 'date_id'] == 1:
+                    df.at[i, 'item_id'] = df.at[i + 1, 'item_id'] if i + 1 < len(df) else df.at[i - 1, 'item_id']
+                elif df.at[i, 'date_id'] == max_date_id:
+                    df.at[i, 'item_id'] = df.at[i - 1, 'item_id']
+                else:
+                    df.at[i, 'item_id'] = df.at[i - 1, 'item_id']
+
+    if df['store_id'].isna().sum() > 0:
+        df['store_id'] = df['item_id'].str.split('_').str[0] + '_' + df['item_id'].str.split('_').str[1]
+
+    return df
+
+
+def preprocess_shop_sales_dates(initial_df):
+
+    df = initial_df.reset_index(drop=True)
     df['date_id'] = pd.to_numeric(df['date_id'], errors='coerce')
-    df['cnt'] = pd.to_numeric(df['cnt'], errors='coerce')
-    df[['item_id', 'store_id']] = df[['item_id', 'store_id']].astype(str)
-
-    max_date_id = df['date_id'].max()
-    for i in range(1, len(df)):
-        if pd.isna(df.at[i, 'date_id']):
-            if pd.isna(df.at[i - 1, 'date_id']):
-                raise ValueError(f"Consecutive NaN in 'date_id' at index {i}")
-            df.at[i, 'date_id'] = 1 if df.at[i - 1, 'date_id'] == max_date_id else df.at[i - 1, 'date_id'] + 1
-
-    df['item_id'].fillna(method='ffill', inplace=True)
-    df['store_id'] = df['item_id'].str.split('_').str[0]
-
-    return df
-
-def preprocess_shop_sales_dates(df):
-    df = df.drop(columns=['weekday']).reset_index(drop=True)
-    df[['wm_yr_wk', 'wday', 'month', 'year']] = df[['wm_yr_wk', 'wday', 'month', 'year']].apply(pd.to_numeric, errors='coerce')
+    df['wm_yr_wk'] = pd.to_numeric(df['wm_yr_wk'], errors='coerce').astype(int)
+    df['wday'] = pd.to_numeric(df['wday'], errors='coerce').astype(int)
+    df['month'] = pd.to_numeric(df['month'], errors='coerce').astype(int)
+    df['year'] = pd.to_numeric(df['year'], errors='coerce').astype(int)
+    df['cashback_store_1'] = pd.to_numeric(df['cashback_store_1'], errors='coerce').astype(float)
+    df['cashback_store_2'] = pd.to_numeric(df['cashback_store_2'], errors='coerce').astype(float)
+    df['cashback_store_3'] = pd.to_numeric(df['cashback_store_3'], errors='coerce').astype(float)
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    
-    df['date_id'] = df['date_id'].interpolate().fillna(method='ffill')
-    df['date'] = df['date'].interpolate().fillna(method='ffill')
-    df['wday'], df['month'], df['year'] = df['date'].dt.weekday + 1, df['date'].dt.month, df['date'].dt.year
 
-    df[['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']] = df[['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']].fillna('Unknown')
-    df[['cashback_store_1', 'cashback_store_2', 'cashback_store_3']] = df[['cashback_store_1', 'cashback_store_2', 'cashback_store_3']].fillna(0)
+    df['date_id'] = df['date_id'].interpolate(method='linear')
+
+    df = df.drop(columns=['weekday'])
+
+    df['wday'] = df['wday'].fillna(df['date'].dt.dayofweek + 1)
+    df['month'] = df['month'].fillna(df['date'].dt.month)
+    df['year'] = df['year'].fillna(df['date'].dt.year)
+
+    event_cols = ['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
+    df[event_cols] = df[event_cols].fillna('Unknown')
+
+    cashback_cols = ['cashback_store_1', 'cashback_store_2', 'cashback_store_3']
+    df[cashback_cols] = df[cashback_cols].fillna(0)
 
     return df
 
-def preprocess_shop_sales_prices(df):
-    df[['wm_yr_wk', 'sell_price']] = df[['wm_yr_wk', 'sell_price']].apply(pd.to_numeric, errors='coerce')
-    df['wm_yr_wk'] = df['wm_yr_wk'].interpolate().round().fillna(method='ffill')
-    df.sort_values(by=['item_id', 'wm_yr_wk'], inplace=True)
-    df['sell_price'] = df['sell_price'].interpolate()
+def preprocess_shop_sales_prices(initial_df):
+
+    df = initial_df.reset_index(drop=True)
+
+    df['wm_yr_wk'] = pd.to_numeric(df['wm_yr_wk'], errors='coerce').astype(float)
+    df['sell_price'] = pd.to_numeric(df['sell_price'], errors='coerce').astype(float)
+
+    max_item_id = df['item_id'].max()
+
+    if df['item_id'].isna().sum() > 0: 
+        for i in range(1, len(df)):
+            if pd.isna(df.at[i, 'item_id']):
+                if df.at[i, 'wm_yr_wk'] == 1:
+                    df.at[i, 'item_id'] = df.at[i + 1, 'item_id'] if i + 1 < len(df) else df.at[i - 1, 'item_id']
+                elif df.at[i, 'wm_yr_wk'] == max_item_id:
+                    df.at[i, 'item_id'] = df.at[i - 1, 'item_id']
+                else:
+                    df.at[i, 'item_id'] = df.at[i - 1, 'item_id']
+
+    if df['store_id'].isna().sum() > 0:
+        df['store_id'] = df['item_id'].str.split('_').str[0] + '_' + df['item_id'].str.split('_').str[1]
+
+    df['wm_yr_wk'] = df['wm_yr_wk'].interpolate(method='linear').round(0)
+    df = df.sort_values(by=['item_id', 'wm_yr_wk']).reset_index(drop=True)
+    df['sell_price'] = df['sell_price'].interpolate(method='linear')
+
     return df
 
 def safe_merge(shop_sales, shop_sales_dates, shop_sales_prices):
-    for df in [shop_sales, shop_sales_dates, shop_sales_prices]:
-        df.columns = df.columns.str.lower()
+    try:
+        shop_sales.columns = shop_sales.columns.str.lower()
+        shop_sales_dates.columns = shop_sales_dates.columns.str.lower()
+        shop_sales_prices.columns = shop_sales_prices.columns.str.lower()
+        
+        merged_df = pd.merge(shop_sales, shop_sales_dates, how='outer', left_on='date_id', right_on='date_id')
 
-    merged_df = pd.merge(shop_sales, shop_sales_dates, on='date_id', how='outer')
+        merged_df['item_id_wm_yr_wk'] = merged_df.item_id.astype(str) + '_' + merged_df.wm_yr_wk.astype(float).astype(str)
+        shop_sales_prices['item_id_wm_yr_wk'] = shop_sales_prices.item_id.astype(str) + '_' + shop_sales_prices.wm_yr_wk.astype(float).astype(str)
 
-    merged_df['item_id_wm_yr_wk'] = merged_df['item_id'] + '_' + merged_df['wm_yr_wk'].astype(str)
-    shop_sales_prices['item_id_wm_yr_wk'] = shop_sales_prices['item_id'] + '_' + shop_sales_prices['wm_yr_wk'].astype(str)
+        map_prices_dict = dict(tuple(zip(shop_sales_prices.item_id_wm_yr_wk, shop_sales_prices.sell_price)))
+        merged_df['sell_price'] = merged_df.item_id_wm_yr_wk.map(map_prices_dict)
 
-    merged_df['sell_price'] = merged_df['item_id_wm_yr_wk'].map(shop_sales_prices.set_index('item_id_wm_yr_wk')['sell_price'])
-    merged_df.sort_values(by=['item_id', 'date_id'], inplace=True)
-    merged_df.drop(columns=['item_id_wm_yr_wk'], inplace=True)
+        merged_df.sort_values(by=['item_id', 'date_id'], inplace=True)
+        merged_df.drop(columns=['item_id_wm_yr_wk'], inplace=True)
 
-    return merged_df
+        merged_df.to_csv('merged_df.csv')
+    
+    except ValueError as e:
+        raise ValueError(f"Error in merging process: {e}")
+    
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred: {e}")
+
+
 
 def main(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
+
     shop_sales = load_dataset(shop_sales_path)
     shop_sales_dates = load_dataset(shop_sales_dates_path)
     shop_sales_prices = load_dataset(shop_sales_prices_path)
@@ -74,7 +132,7 @@ def main(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
     shop_sales_dates_processed = preprocess_shop_sales_dates(shop_sales_dates)
     shop_sales_prices_processed = preprocess_shop_sales_prices(shop_sales_prices)
 
-    return safe_merge(shop_sales_processed, shop_sales_dates_processed, shop_sales_prices_processed)
+    safe_merge(shop_sales_processed, shop_sales_dates_processed, shop_sales_prices_processed)
 
 
 if __name__ == '__main__':
