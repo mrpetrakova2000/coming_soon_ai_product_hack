@@ -59,13 +59,6 @@ def preprocess_shop_sales_dates(initial_df):
     df['wday'] = df['wday'].fillna(df['date'].dt.dayofweek + 1)
     df['month'] = df['month'].fillna(df['date'].dt.month)
     df['year'] = df['year'].fillna(df['date'].dt.year)
-
-    event_cols = ['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
-    df[event_cols] = df[event_cols].fillna('Unknown')
-
-    cashback_cols = ['cashback_store_1', 'cashback_store_2', 'cashback_store_3']
-    df[cashback_cols] = df[cashback_cols].fillna(0)
-
     return df
 
 def preprocess_shop_sales_prices(initial_df):
