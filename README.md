@@ -36,7 +36,7 @@ docker start <container-name>
 Frontend  
 Open ./frontend in terminal. Use commands:
 ```
-npm intall
+npm install
 npm start
 ```
 Backend
