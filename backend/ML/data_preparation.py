@@ -1,21 +1,25 @@
-import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
-def random_noise(dataframe):
-    return np.random.normal(scale=1.5, size=(len(dataframe),))
-
-def lag_features(dataframe, lags):
-    for lag in lags:
-        dataframe['cnt_lag_' + str(lag)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
-            lambda x: x.shift(lag)) + random_noise(dataframe)
-    return dataframe
-
-def roll_mean_features(dataframe, windows):
-    for window in windows:
-        dataframe['cnt_roll_mean_' + str(window)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
-            lambda x: x.shift(1).rolling(window=window, min_periods=10, win_type="triang").mean()) + random_noise(dataframe)
-    return dataframe
-
-def apply_feature_engineering(data, lags=[1, 2, 6, 7, 13, 14], windows=[30, 91]):
-    data = lag_features(data, lags)
-    data = roll_mean_features(data, windows)
+def preprocess(data):
+    data['sell_price'] = data['sell_price'].interpolate()
+    data['quarter_of_year'] = data.date.dt.quarter
+    data['week_of_year'] = data.date.dt.isocalendar().week
+    data['day_of_year'] = data.date.dt.dayofyear
+    data['day_of_month'] = data.date.dt.day
+    data['day_of_week'] = data.date.dt.dayofweek
+    data["is_wknd"] = data.date.dt.weekday // 4
+    data['is_month_start'] = data.date.dt.is_month_start.astype(int)
+    data['is_month_end'] = data.date.dt.is_month_end.astype(int)
+    data.sort_values(by=['store_id', 'item_id', 'date'], axis=0, inplace=True)
+    data = pd.get_dummies(data, columns=['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2'])
+    le = LabelEncoder()
+    for col in ['store_id', 'item_id']:
+        data[col] = le.fit_transform(data[col]) + 1
     return data
+
+def split(data, val_size=0.2):
+    splitting_date = data.date.min() + (1-val_size)*(data.date.max() - data.date.min())
+    train = data.loc[(data["date"] < splitting_date), :]
+    val = data.loc[(data["date"] >= splitting_date) & (data["date"] < data.date.max()), :]
+    return train, val

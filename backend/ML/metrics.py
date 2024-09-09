@@ -1,35 +1,15 @@
-import pandas as pd
-import lightgbm as lgb
-from data_preparation import preprocess, split
-from feature_engineering import apply_feature_engineering
+import numpy as np
 
-def get_Lgb_dataset(X_train, Y_train, X_val, Y_val):
-    lgbtrain = lgb.Dataset(data=X_train, label=Y_train, feature_name=list(X_train.columns), free_raw_data=False, categorical_feature='')
-    lgbval = lgb.Dataset(data=X_val, label=Y_val, reference=lgbtrain, feature_name=list(X_val.columns), free_raw_data=False) if X_val is not None else None
-    return lgbtrain, lgbval
+def smape(preds, target):
+    n = len(preds)
+    masked_arr = ~((preds == 0) & (target == 0))
+    preds, target = preds[masked_arr], target[masked_arr]
+    num = np.abs(preds - target)
+    denom = np.abs(preds) + np.abs(target)
+    smape_val = (200 * np.sum(num / denom)) / n
+    return smape_val
 
-def split_and_get_features(data, target_column='cnt'):
-    train, val = split(data)
-    train = apply_feature_engineering(train)
-    val = apply_feature_engineering(val)
-    cols = [col for col in train.columns if col not in ['date', 'date_id', "year", target_column]]
-    X_train = train[cols]
-    Y_train = train[target_column]
-    X_val = val[cols]
-    Y_val = val[target_column]
-    lgbtrain, lgbval = get_Lgb_dataset(X_train, Y_train, X_val, Y_val)
-    return X_train, Y_train, X_val, Y_val, lgbtrain, lgbval
-
-class LGBMDataset:
-    def __init__(self, file_path):
-        self.data = pd.read_csv(file_path, parse_dates=['date'], index_col=0)
-        self.data = preprocess(self.data)
-        self.X_train, self.Y_train, self.X_val, self.Y_val, self.lgbtrain, self.lgbval = split_and_get_features(self.data)
-
-    def __getitem__(self, index):
-        if index < len(self.X_train):
-            return self.X_train.iloc[index], self.Y_train.iloc[index]
-        raise IndexError("Index out of range")
-
-    def __len__(self):
-        return len(self.X_train)
+def lgbm_smape(preds, train_data):
+    labels = train_data.get_label()
+    smape_val = smape(preds, labels)
+    return 'SMAPE', smape_val, False
