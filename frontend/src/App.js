@@ -10,7 +10,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
-  const [plotdata, setPlotdata] = useState(null);
+  const [plots, setPlots] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
   const handleFileChange = (event) => {
@@ -34,7 +34,7 @@ function App() {
     event.preventDefault();
     const formData = new FormData();
     files.forEach((file) => {
-      console.log(files[0]);
+      console.log(file);
       formData.append('files', file);
     });
     console.log(predictionPeriod)
@@ -49,11 +49,11 @@ function App() {
       });
       setError(false);
       setMessage(response.data.message);
-      setPlotdata(response.data.plotdata);
+      setPlots(response.data.plots);
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
-      console.log(response.data.plotdata);
+      console.log(response.data.plots);
     } catch (error) {
       console.error("Ошибка загрузки файла:", error);
       setError(true);
@@ -127,18 +127,14 @@ function App() {
       {isLoading && <p>Загрузка ...</p>}
       {error && <p className='error'>Ошибка!</p>}
       {message && <p>{message}</p>}
-      {!error && loaded && plotdata && console.log(plotdata.data)}
-      {
-        !error && !isLoading && loaded &&
-        <Plot
-          data={
-            [
-              plotdata.data,
-              plotdata.prediction
-            ]
-          }
-
-        />
+      {!error && loaded && plots && console.log(plots)}
+      {!error && !isLoading && loaded &&
+        plots.map((plot, index) => (
+          <Plot
+            key={index}
+            data={plot.data}
+            layout={plot.layout}
+          />))
       }
     </div>
   );
