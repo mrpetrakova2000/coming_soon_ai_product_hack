@@ -1,15 +1,21 @@
 import numpy as np
 
-def smape(preds, target):
-    n = len(preds)
-    masked_arr = ~((preds == 0) & (target == 0))
-    preds, target = preds[masked_arr], target[masked_arr]
-    num = np.abs(preds - target)
-    denom = np.abs(preds) + np.abs(target)
-    smape_val = (200 * np.sum(num / denom)) / n
-    return smape_val
+def random_noise(dataframe):
+    return np.random.normal(scale=1.5, size=(len(dataframe),))
 
-def lgbm_smape(preds, train_data):
-    labels = train_data.get_label()
-    smape_val = smape(preds, labels)
-    return 'SMAPE', smape_val, False
+def lag_features(dataframe, lags):
+    for lag in lags:
+        dataframe['cnt_lag_' + str(lag)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
+            lambda x: x.shift(lag)) + random_noise(dataframe)
+    return dataframe
+
+def roll_mean_features(dataframe, windows):
+    for window in windows:
+        dataframe['cnt_roll_mean_' + str(window)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
+            lambda x: x.shift(1).rolling(window=window, min_periods=10, win_type="triang").mean()) + random_noise(dataframe)
+    return dataframe
+
+def apply_feature_engineering(data, lags=[1, 2, 6, 7, 13, 14], windows=[30, 91]):
+    data = lag_features(data, lags)
+    data = roll_mean_features(data, windows)
+    return data
