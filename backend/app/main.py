@@ -1,6 +1,6 @@
 import uvicorn
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import time
@@ -27,7 +27,7 @@ app.add_middleware(
 #     model = pickle.load(f)
 
 @app.post("/uploadfile/")
-async def upload_file(files: List[UploadFile] = File(...)):
+async def upload_file(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
     # df = read_data()
     # model.predict(df)
     # data = prepare_data_fo_plot_from_original_dataset()
@@ -35,6 +35,8 @@ async def upload_file(files: List[UploadFile] = File(...)):
     # metrics = extract_metrics(predict)
     for file in files:
         print(file)
+    
+    print(prediction_period)
     
     time.sleep(3)
     return {"message": "CSV файл успешно загружен!"

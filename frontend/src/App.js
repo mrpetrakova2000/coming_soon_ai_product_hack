@@ -5,6 +5,7 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [files, setFiles] = useState([]);
+  const [predictionPeriod, setPredictionPeriod] = useState('1'); // По умолчанию 1 день
   const [drag, setDrag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -36,6 +37,8 @@ function App() {
       console.log(files[0]);
       formData.append('files', file);
     });
+    console.log(predictionPeriod)
+    formData.append('prediction_period', Number(predictionPeriod)); // Добавляем выбранный период предсказания
 
     try {
       setIsLoading(true)
@@ -104,7 +107,21 @@ function App() {
             ))}
           </ul>
         </div>)}
-        {files.length > 0 && (<button className="upload-button" type="submit">Upload files</button>)}
+
+        {files.length > 0 && 
+        (<p >Выберите период предсказания:</p>)}
+        {files.length > 0 && 
+        (<select className='predict-period'
+                id="predictionPeriod"
+                value={predictionPeriod}
+                onChange={(e) => setPredictionPeriod(e.target.value)}
+            >
+                <option value="1">1 день</option>
+                <option value="7">1 неделя</option>
+                <option value="30">1 месяц</option>
+        </select>)}
+
+        {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">Upload files</button>)}
       </form>
 
       {isLoading && <p>Загрузка ...</p>}
