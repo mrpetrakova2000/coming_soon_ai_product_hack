@@ -7,26 +7,35 @@ function App() {
   const [files, setFiles] = useState([]);
   const [drag, setDrag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(true);
+  const [error, setError] = useState(false);
   const [message, setMessage] = useState("");
   const [plotdata, setPlotdata] = useState(null);
-  const [submit, setSubmit] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const handleFileChange = (event) => {
     event.preventDefault();
     let files = [...event.dataTransfer.files];
     console.log(files);
-    setFiles(files);
+
+    const csvFiles = files.filter(file => file.name.endsWith('.csv'));
+
+    if (csvFiles.length !== files.length) {
+        setError(true);
+        setMessage("Пожалуйста, загрузите только файлы с расширением .csv");
+    }
+    else {
+      setFiles(files);
+    }
     setDrag(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    //files.forEach((file) => {
-    console.log(files[0]);
-    formData.append('file', files[0]);
-    //});
+    files.forEach((file) => {
+      console.log(files[0]);
+      formData.append('files', file);
+    });
 
     try {
       setIsLoading(true)
@@ -43,11 +52,12 @@ function App() {
       console.log(response.data.message);
       console.log(response.data.plotdata);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Ошибка загрузки файла:", error);
       setError(true);
-      setMessage("Error uploading file");
+      setMessage("Ошибка загрузки файла");
     } finally {
       setIsLoading(false);
+      setLoaded(true);
     }
   };
 
@@ -68,7 +78,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Upload a CSV File</h1>
+      <h1>Загрузить CSV файлы</h1>
       <form onSubmit={handleSubmit}>
         <div className='drop-area'>
           {drag
@@ -88,21 +98,21 @@ function App() {
         
         {files.length > 0 && (<div>
           <h2>Выбранные файлы:</h2>
-          <ul>
+          <ul className='files-list'>
             {files.map((file, index) => (
               <li key={index}>{file.name} <button className="remove-file" type="button" onClick={() => removeFile(index)}>Удалить файл</button></li> 
             ))}
           </ul>
         </div>)}
-        {files.length > 0 && (<button className="upload-button" type="submit" onClick={e => setSubmit(true)}>Upload files</button>)}
+        {files.length > 0 && (<button className="upload-button" type="submit">Upload files</button>)}
       </form>
 
       {isLoading && <p>Загрузка ...</p>}
-      {error && submit && !isLoading && <p>Ошибка!!!</p>}
+      {error && <p className='error'>Ошибка!</p>}
       {message && <p>{message}</p>}
-      {plotdata && console.log(plotdata.data)}
+      {!error && loaded && plotdata && console.log(plotdata.data)}
       {
-        !error && !isLoading && submit &&
+        !error && !isLoading && loaded &&
         <Plot
           data={
             [

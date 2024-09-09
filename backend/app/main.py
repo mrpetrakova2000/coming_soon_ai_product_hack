@@ -4,6 +4,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import time
+from typing import List
 
 app = FastAPI()
 
@@ -26,15 +27,17 @@ app.add_middleware(
 #     model = pickle.load(f)
 
 @app.post("/uploadfile/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(files: List[UploadFile] = File(...)):
     # df = read_data()
     # model.predict(df)
     # data = prepare_data_fo_plot_from_original_dataset()
     # predict = prepare_data_fo_plot_from_predict()
     # metrics = extract_metrics(predict)
+    for file in files:
+        print(file)
     
     time.sleep(3)
-    return {"filename": file.filename, "message": "CSV file received successfully!"
+    return {"message": "CSV файл успешно загружен!"
      , 
     "plotdata": {
         "data" : {
