@@ -2,21 +2,31 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
 
+
 function App() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [drag, setDrag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(true);
   const [message, setMessage] = useState("");
   const [plotdata, setPlotdata] = useState(null);
+  const [submit, setSubmit] = useState(false);
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    event.preventDefault();
+    let files = [...event.dataTransfer.files];
+    console.log(files);
+    setFiles(files);
+    setDrag(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append("file", file);
+    //files.forEach((file) => {
+    console.log(files[0]);
+    formData.append('file', files[0]);
+    //});
 
     try {
       setIsLoading(true)
@@ -37,32 +47,71 @@ function App() {
       setError(true);
       setMessage("Error uploading file");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
+
+  function dragStartHandler(event) {
+    event.preventDefault();
+    setDrag(true);
+  }
+
+  function dragLeaveHandler(event) {
+    event.preventDefault();
+    setDrag(false);
+  }
+
+  const removeFile = (index) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
 
   return (
     <div className="App">
       <h1>Upload a CSV File</h1>
       <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} />
-        <button type="submit">Upload</button>
+        <div className='drop-area'>
+          {drag
+            ? <div className='files-down'
+              onDragStart={e => dragStartHandler(e)}
+              onDragLeave={e => dragLeaveHandler(e)}
+              onDragOver={e => dragStartHandler(e)}
+              onDrop={e => handleFileChange(e)}
+            > <p>Отпустите файлы, чтобы загрузить </p></div>
+            : <div className='files-up'
+              onDragStart={e => dragStartHandler(e)}
+              onDragLeave={e => dragLeaveHandler(e)}
+              onDragOver={e => dragStartHandler(e)}
+            > <p>Переместите файлы, чтобы загрузить </p></div>
+          }
+        </div>
+        
+        {files.length > 0 && (<div>
+          <h2>Выбранные файлы:</h2>
+          <ul>
+            {files.map((file, index) => (
+              <li key={index}>{file.name} <button className="remove-file" type="button" onClick={() => removeFile(index)}>Удалить файл</button></li> 
+            ))}
+          </ul>
+        </div>)}
+        {files.length > 0 && (<button className="upload-button" type="submit" onClick={e => setSubmit(true)}>Upload files</button>)}
       </form>
-      {error && <p>Ошибка!!!</p>}
+
       {isLoading && <p>Загрузка ...</p>}
+      {error && submit && !isLoading && <p>Ошибка!!!</p>}
       {message && <p>{message}</p>}
       {plotdata && console.log(plotdata.data)}
       {
-      !error && !isLoading && 
-      <Plot
-        data={
-          [
-          plotdata.data,
-          plotdata.prediction
-          ]
-        }
+        !error && !isLoading && submit &&
+        <Plot
+          data={
+            [
+              plotdata.data,
+              plotdata.prediction
+            ]
+          }
 
-      />
+        />
       }
     </div>
   );
