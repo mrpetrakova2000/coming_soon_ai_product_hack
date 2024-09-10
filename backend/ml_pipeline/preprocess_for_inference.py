@@ -1,8 +1,8 @@
 import pandas as pd
-from feature_tools import *
 
+from backend.ml_pipeline.feature_engineering_tools import *
 
-def calculate_features_for_inference(data, params: dict) -> pd.DataFrame:
+def calculate_features_for_inference(data: pd.DataFrame, params: dict) -> pd.DataFrame:
     # import parameters
     target_column = params.get('target_column', None)
     datetime_column = params.get('datetime_column', None)
