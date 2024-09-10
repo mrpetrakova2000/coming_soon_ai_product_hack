@@ -42,7 +42,7 @@ function App() {
 
     try {
       setIsLoading(true)
-      const response = await axios.post("http://localhost:8000/uploadfile/", formData, {
+      const response = await axios.post("http://localhost:8000/prediction/", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
