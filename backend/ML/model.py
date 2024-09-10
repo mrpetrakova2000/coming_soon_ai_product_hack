@@ -2,7 +2,7 @@ import lightgbm as lgb
 from metrics import lgbm_smape
 
 class LGBMModel:
-    def __init__(self, params=None):
+    def __init__(self, params=None, prediction_period=1):
         self.default_params = {
             'num_leaves': 10,
             'learning_rate': 0.01,
@@ -15,6 +15,7 @@ class LGBMModel:
         }
         self.params = params if params is not None else self.default_params
         self.model = None
+        self.prediction_period = prediction_period
 
     def train(self, lgbtrain, lgbval=None, callbacks=None):
         default_callbacks = [lgb.early_stopping(stopping_rounds=self.params.get('early_stopping_rounds', 3))]
@@ -35,7 +36,7 @@ class LGBMModel:
     def predict(self, X):
         if self.model is None:
             raise RuntimeError("Model has not been trained yet.")
-        return self.model.predict(X, num_iteration=self.model.best_iteration)
+        return self.model.predict(X)
 
     def save_model(self, file_name):
         if self.model is None:

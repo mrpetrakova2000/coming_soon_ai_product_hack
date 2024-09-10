@@ -5,13 +5,15 @@ def random_noise(dataframe):
 
 def lag_features(dataframe, lags):
     for lag in lags:
-        dataframe['cnt_lag_' + str(lag)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
+        dataframe = dataframe.copy()
+        dataframe.loc[:,'cnt_lag_' + str(lag)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
             lambda x: x.shift(lag)) + random_noise(dataframe)
     return dataframe
 
 def roll_mean_features(dataframe, windows):
     for window in windows:
-        dataframe['cnt_roll_mean_' + str(window)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
+        dataframe = dataframe.copy()
+        dataframe.loc[:, 'cnt_roll_mean_' + str(window)] = dataframe.groupby(["store_id", "item_id"])['cnt'].transform(
             lambda x: x.shift(1).rolling(window=window, min_periods=10, win_type="triang").mean()) + random_noise(dataframe)
     return dataframe
 
