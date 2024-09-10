@@ -10,10 +10,6 @@ from backend.ml_pipeline.model import LGBMModel
 
 
 def run_training(data: pd.DataFrame, config: DictConfig):
-    # shift target 
-    data['Y'] = data['cnt'].shift(-1)
-    data = data.dropna()
-
     # split the data into train and val
     train_size = int(len(data) * 0.8)
     train_data = data[:train_size]
