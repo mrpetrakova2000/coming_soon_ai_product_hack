@@ -43,15 +43,16 @@ app.add_middleware(
 # with open("app/churn_model.pkl", "rb") as f:
 #     model = pickle.load(f)
 
-@app.post("/getSku/")
+@app.post("/getSkus/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Получение продуктов"
      ,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
+    },
+    "skus" : ["Один", "Два"]
     }
 
 @app.post("/prediction/")
@@ -91,7 +92,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
     time.sleep(3)
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Прогнозирование"
      , 
     "plots": plots,
     "metrics": {
@@ -102,28 +103,32 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
         { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
         { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
     ]
+    },
+    "skus" : ["Один", "Два"]
     }
 
 @app.post("/analytics/")
 async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Аналитика"
      ,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
+    },
+    "skus" : ["Один", "Два"]
     }
 
-@app.post("/analytics/")
-async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
+@app.post("/clustering/")
+async def clustering(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Кластеризация"
      ,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
+    },
+    "skus" : ["Один", "Два"]
     }
 
 
@@ -161,11 +166,11 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
                 'title': y_axis_title
             },
             'legend': {
-                'orientation': 'h',  
-                'yanchor': 'bottom',  
-                'y': -0.5,  
-                'xanchor': 'center',  
-                'x': 0.5 
+                'orientation': 'h',
+                'yanchor': 'bottom',
+                'y': -0.5,
+                'xanchor': 'center',
+                'x': 0.5
             }
         }
     }
