@@ -23,4 +23,6 @@ def calculate_features_for_inference(data, params: dict) -> pd.DataFrame:
     data = extract_month(data, datetime_column) if params.get('month') else data
     data = extract_hour(data, datetime_column) if params.get('hour') else data
 
+    data = data.dropna()
+
     return data
