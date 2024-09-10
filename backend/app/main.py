@@ -17,8 +17,8 @@ model = LGBMModel()
 # model.train(dataset.lgbtrain, dataset.lgbval)
 # print("model trained")
 
-# model.load_model("new_model.txt")
-# print("model loaded")
+model.load_model("new_model.txt")
+print("model loaded")
 
 # model.save_model("new_model.txt")
 # print("model saved")
@@ -105,6 +105,11 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     ]
     },
     "skus" : ["Один", "Два"]
+    },
+    "parameters": [
+        { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
+        { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
+    ]
     }
 
 @app.post("/analytics/")

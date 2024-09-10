@@ -73,6 +73,7 @@ function App() {
       setPlots(response.data.plots);
       setParameters(response.data.parameters)
       setSkus(response.data.skus);
+      setParameters(response.data.parameters)
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
@@ -254,6 +255,14 @@ function updateApiMethod() {
       </div>)}
 
       {!error && !isLoading && loaded && plots &&
+
+      {!error && loaded && activeTab == 1 && !isLoading &&
+      (<div className="container">
+        <h2 className="heading">Отчёт</h2>
+        <ParametersDisplay data={parameters} />
+      </div>)}
+
+      {!error && !isLoading && loaded &&
         plots.map((plot, index) => (
           <Plot
             key={index}
