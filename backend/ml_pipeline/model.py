@@ -8,7 +8,7 @@ class LGBMModel:
         self.model = LGBMRegressor(**params)
 
     # Train the model (normal training)
-    def fit(self, X_train, y_train, X_val=None, y_val=None):
+    def fit(self, X_train, y_train, X_val=None, y_пшеval=None):
         if X_val is not None and y_val is not None:
             # If validation data is provided, use early stopping
             self.model.fit(X_train, y_train, eval_set=[(X_val, y_val)], eval_metric=lgbm_smape, early_stopping_rounds=10)
