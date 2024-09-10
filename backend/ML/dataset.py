@@ -1,18 +1,12 @@
 import pandas as pd
 import lightgbm as lgb
-from data_preparation import preprocess
+from data_preparation import preprocess, split
 from feature_engineering import apply_feature_engineering
 
 def get_Lgb_dataset(X_train, Y_train, X_val, Y_val):
     lgbtrain = lgb.Dataset(data=X_train, label=Y_train, feature_name=list(X_train.columns), free_raw_data=False, categorical_feature='')
     lgbval = lgb.Dataset(data=X_val, label=Y_val, reference=lgbtrain, feature_name=list(X_val.columns), free_raw_data=False) if X_val is not None else None
     return lgbtrain, lgbval
-
-def split(data, val_size=0.2):
-    splitting_date = data.date.min() + (1-val_size)*(data.date.max() - data.date.min())
-    train = data.loc[(data["date"] < splitting_date), :]
-    val = data.loc[(data["date"] >= splitting_date) & (data["date"] < data.date.max()), :]
-    return train, val
 
 def split_and_get_features(data, target_column='cnt'):
     train, val = split(data)
