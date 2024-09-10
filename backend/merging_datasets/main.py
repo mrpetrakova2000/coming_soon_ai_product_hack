@@ -1,9 +1,9 @@
 import pandas as pd
-from preprocessing import prepare_shop_sales, prepare_shop_sales_dates, prepare_shop_sales_prices
-from utils import load_dataset, safe_merge
+from backend.merging_datasets.preprocessing import prepare_shop_sales, prepare_shop_sales_dates, prepare_shop_sales_prices
+from backend.merging_datasets.utils import load_dataset, safe_merge
 
 # Load datasets (user uploads the files)
-def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path)
+def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
     shop_sales = load_dataset(shop_sales_path)
     shop_sales_dates = load_dataset(shop_sales_dates_path)
     shop_sales_prices = load_dataset(shop_sales_prices_path)
@@ -17,4 +17,5 @@ def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path)
     merged_df = safe_merge(shop_sales_processed, shop_sales_dates_processed, shop_sales_prices_processed)
 
     return merged_df
+
 
