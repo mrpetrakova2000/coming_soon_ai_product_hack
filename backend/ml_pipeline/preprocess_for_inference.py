@@ -10,6 +10,7 @@ def calculate_features_for_inference(data: pd.DataFrame, params: dict) -> pd.Dat
     lag_difference = params.get('lag_difference', None)
     rolling_mean_range = params.get('rolling_mean_range', None)
     rolling_std_range = params.get('rolling_std_range', None)
+    shift = params.get('shift')
 
     # self check
     data[datetime_column] = pd.to_datetime(data[datetime_column], errors='coerce')
@@ -22,6 +23,8 @@ def calculate_features_for_inference(data: pd.DataFrame, params: dict) -> pd.Dat
     data = extract_day_of_week(data, datetime_column) if params.get('day_of_week') else data
     data = extract_month(data, datetime_column) if params.get('month') else data
     data = extract_hour(data, datetime_column) if params.get('hour') else data
+
+    data['Y'] = data[target_column].shift(shift)
 
     data = data.dropna()
 

@@ -1,10 +1,10 @@
-num_leaves: 10
+num_leaves: 40
 learning_rate: 0.001
 feature_fraction: 0.8
-max_depth: 10
+max_depth: 40
 verbose: 0
 num_boost_round: 1000
-early_stopping_rounds: 30
+early_stopping_rounds: 500
 nthread: -1
 
 granularity: one_day
