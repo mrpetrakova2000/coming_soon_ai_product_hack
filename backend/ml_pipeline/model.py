@@ -1,42 +1,37 @@
 import lightgbm as lgb
+from lightgbm import LGBMRegressor
 from backend.ml_pipeline.metrics import lgbm_smape
 
 class LGBMModel:
-    def __init__(self, params: dict | None = None):
-        self.default_params = {
-            'num_leaves': 10,
-            'learning_rate': 0.01,
-            'feature_fraction': 0.8,
-            'max_depth': 5,
-            'verbose': 0,
-            'early_stopping_rounds': 8,
-            'nthread': -1
-        }
-        self.params = params if params is not None else self.default_params
-        self.model = None
+    def __init__(self, **params):
+        # Initialize the LGBMRegressor with parameters
+        self.model = LGBMRegressor(**params)
 
-    def train(self, lgbtrain, lgbval=None, num_boost_round=1000, callbacks=None):
-        # Early stopping callback
-        default_callbacks = [lgb.early_stopping(stopping_rounds=self.params.get('early_stopping_rounds', 3))]
-        if callbacks is None:
-            callbacks = default_callbacks
+    # Train the model (normal training)
+    def fit(self, X_train, y_train, X_val=None, y_val=None):
+        if X_val is not None and y_val is not None:
+            # If validation data is provided, use early stopping
+            self.model.fit(X_train, y_train, eval_set=[(X_val, y_val)], eval_metric=lgbm_smape, early_stopping_rounds=10)
         else:
-            callbacks = callbacks + default_callbacks
-        
-        self.model = lgb.train(
-            params=self.params,
-            train_set=lgbtrain,
-            valid_sets=[lgbval] if lgbval is not None else None,
-            num_boost_round=num_boost_round,
-            callbacks=callbacks,
-            feval=lgbm_smape
-        )
+            # If no validation data, train without early stopping
+            self.model.fit(X_train, y_train)
 
+    # Predict method to make predictions
     def predict(self, X):
-        return self.model.predict(X, num_iteration=self.model.best_iteration)
+        return self.model.predict(X)
 
+    # Get parameters (needed for GridSearchCV)
+    def get_params(self, deep=True):
+        return self.model.get_params(deep)
+
+    # Set parameters (needed for GridSearchCV)
+    def set_params(self, **params):
+        return self.model.set_params(**params)
+
+    # Save the model to file
     def save_model(self, file_name):
-        self.model.save_model(file_name, num_iteration=self.model.best_iteration)
+        self.model.booster_.save_model(file_name)
 
+    # Load the model from file
     def load_model(self, file_name):
         self.model = lgb.Booster(model_file=file_name)
