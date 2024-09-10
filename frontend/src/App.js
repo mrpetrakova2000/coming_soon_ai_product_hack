@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useMemo } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
 import ParametersDisplay from './ParametersDisplay';
@@ -13,6 +13,10 @@ function App() {
   const [message, setMessage] = useState("");
   const [plots, setPlots] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [allSkusFlag, setAllSkusFlag] = useState(true);
+  const [choosedSku, setChoosedSku] = useState(null);
+  const [skus, setSkus] = useState([]);
+  // const [isSkuChoosed, setIsSkuChoosed] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
   const [parameters, setParameters] = useState([])
 
@@ -21,6 +25,14 @@ function App() {
     1: 'Аналитика',
     2: 'Кластеризация'
   };
+
+  const tabsWithSkusFlag = [0, 1];
+
+  const apiMethod = updateApiMethod();
+  const submitButtonName = getSubmitButtonName();
+  // console.log(allSkusFlag);
+  // console.log(skus);
+  // console.log(choosedSku);
 
   const handleFileChange = (event) => {
     event.preventDefault();
@@ -51,7 +63,7 @@ function App() {
 
     try {
       setIsLoading(true)
-      const response = await axios.post("http://localhost:8000/prediction/", formData, {
+      const response = await axios.post("http://localhost:8000/" + apiMethod + "/", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -60,10 +72,13 @@ function App() {
       setMessage(response.data.message);
       setPlots(response.data.plots);
       setParameters(response.data.parameters)
+      setSkus(response.data.skus);
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
       console.log(response.data.plots);
+      console.log("SKUUUUUUUUUs " + response.data.skus);
+      console.log("SKUUUUUUUUUs original " + skus);
     } catch (error) {
       console.error("Ошибка загрузки файла:", error);
       setError(true);
@@ -91,18 +106,60 @@ function App() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setLoaded(false);
+    setChoosedSku(null);
+    setAllSkusFlag(true);
+    setSkus(null);
+    setLoaded(false);
   };
 
-  /*const data = [
-    { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
-    { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
-  ];*/
+function updateApiMethod() {
+    switch(activeTab) {
+      case 0:
+        if (allSkusFlag === true || choosedSku != null) {
+          return "prediction";
+        } else {
+          return "getSkus";
+        }
+      case 1:
+        if (allSkusFlag === true || choosedSku != null) {
+          return "analytics";
+        } else {
+          return "getSkus";
+        }
+      case 2:
+        return "clustering";
+      default:
+        console.log("unsupported")
+        return;
+    }
+  }
+
+  function getSubmitButtonName() {
+    switch(activeTab) {
+      case 0:
+        if (allSkusFlag === true || choosedSku != null) {
+          return "Получить прогноз";
+        } else {
+          return "Получить список продуктов";
+        }
+      case 1:
+        if (allSkusFlag === true || choosedSku != null) {
+          return "Получить аналитику";
+        } else {
+          return "Получить список продуктов";
+        }
+      case 2:
+        return "Получить кластеризацию";
+      default:
+        console.log("unsupported")
+        return;
+    }
+  }
 
 
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
-      
       <div className='form-container'>
         <div className="tabs">
           {Object.keys(tabs).map((tab) => (
@@ -141,8 +198,35 @@ function App() {
             </ul>
           </div>)}
 
+          {files.length > 0 && tabsWithSkusFlag.includes(activeTab) &&
+           (<h3>Прогноз по всем продуктам:</h3>)}
+          {files.length > 0 && tabsWithSkusFlag.includes(activeTab) &&
+          <select className='predict-period'
+              id="predictionPeriod"
+              value={allSkusFlag}
+              onChange={(e) => {setAllSkusFlag(e.target.value === "true");}}
+            >
+              <option value={true}>Да</option>
+              <option value={false}>Нет</option>
+            </select>}
+
+          {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
+           (<h3>Выберите продукт:</h3>)}
+          {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
+          <select
+              className='predict-period'
+              id="predictionPeriod"
+              value={choosedSku}
+              onChange={(e) => {setChoosedSku(e.target.value);}
+            }
+            >
+              {skus.map((sku, index) => (
+                <option key={index} value={sku} >{sku}</option>
+              ))}
+            </select>}
+
           {files.length > 0 && activeTab == 0 &&
-            (<h3>Выберите период прогнозирования:</h3>)}
+            (<h3>Выберите период прогноза:</h3>)}
           {files.length > 0 && activeTab == 0 &&
             (<select className='predict-period'
               id="predictionPeriod"
@@ -154,7 +238,7 @@ function App() {
               <option value="30">1 месяц</option>
             </select>)}
 
-          {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">Upload files</button>)}
+          {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">{submitButtonName}</button>)}
         </form>
       </div>
 
@@ -169,7 +253,7 @@ function App() {
         <ParametersDisplay data={parameters} />
       </div>)}
 
-      {!error && !isLoading && loaded &&
+      {!error && !isLoading && loaded && plots &&
         plots.map((plot, index) => (
           <Plot
             key={index}
