@@ -1,0 +1,17 @@
+num_leaves: 30
+learning_rate: 0.01
+feature_fraction: 0.8
+max_depth: 16
+verbose: 1
+num_boost_round: 1000
+early_stopping_rounds: 150
+nthread: -1
+
+granularity: 1
+cluster: 5
+
+save_model_to: /home/evgenii/work/itmo/coming_soon_ai_product_hack/backend/ml_pipeline/models/granularity_${granularity}/model_cluster_${cluster}.txt
+
+cluster_train: /home/evgenii/work/itmo/coming_soon_ai_product_hack/backend/ml_pipeline/datasets/granularity_${granularity}/cluster_${cluster}_train.csv
+cluster_val: /home/evgenii/work/itmo/coming_soon_ai_product_hack/backend/ml_pipeline/datasets/granularity_${granularity}/cluster_${cluster}_val.csv
+cluster_test: /home/evgenii/work/itmo/coming_soon_ai_product_hack/backend/ml_pipeline/datasets/granularity_${granularity}/cluster_${cluster}_test.csv
