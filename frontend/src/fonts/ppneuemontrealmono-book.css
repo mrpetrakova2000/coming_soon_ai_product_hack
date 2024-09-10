@@ -1,0 +1,9 @@
+@font-face {
+	font-family: 'PPNeueMontrealMono-Book';
+	src: url('../fonts/ppneuemontrealmono-book.eot'); /* IE 9 Compatibility Mode */
+	src: url('../fonts/ppneuemontrealmono-book.eot?#iefix') format('embedded-opentype'), /* IE < 9 */
+		url('../fonts/ppneuemontrealmono-book.woff2') format('woff2'), /* Super Modern Browsers */
+		url('../fonts/ppneuemontrealmono-book.woff') format('woff'), /* Firefox >= 3.6, any other modern browser */
+		url('../fonts/ppneuemontrealmono-book.ttf') format('truetype'), /* Safari, Android, iOS */
+		url('../fonts/ppneuemontrealmono-book.svg#ppneuemontrealmono-book') format('svg'); /* Chrome < 4, Legacy iOS */
+}

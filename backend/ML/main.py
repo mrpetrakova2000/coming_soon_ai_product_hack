@@ -14,14 +14,14 @@ file_path = 'merged_df.csv'
 dataset = LGBMDataset(file_path)
 
 model = LGBMModel()
-# model.train(dataset.lgbtrain, dataset.lgbval)
-# print("model trained")
+#model.train(dataset.lgbtrain, dataset.lgbval)
+#print("model trained")
 
 model.load_model("new_model.txt")
 print("model loaded")
 
-# model.save_model("new_model.txt")
-# print("model saved")
+#model.save_model("new_model.txt")
+#print("model saved")
 
 app = FastAPI()
 
@@ -100,7 +100,7 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
                 'y': y1,
                 'type': 'scatter',
                 'mode': 'lines+markers',
-                'marker': {'color': 'blue'},
+                'marker': {'color': '#000'},
                 'name': trace1_name
             },
             {
@@ -108,7 +108,7 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
                 'y': y2,
                 'type': 'scatter',
                 'mode': 'lines+markers',
-                'marker': {'color': 'red'},
+                'marker': {'color': '#cd78f0'},
                 'name': trace2_name
             }
         ],
