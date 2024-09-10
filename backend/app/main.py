@@ -14,14 +14,14 @@ file_path = 'merged_df.csv'
 dataset = LGBMDataset(file_path)
 
 model = LGBMModel()
-# model.train(dataset.lgbtrain, dataset.lgbval)
-# print("model trained")
+model.train(dataset.lgbtrain, dataset.lgbval)
+print("model trained")
 
-model.load_model("new_model.txt")
-print("model loaded")
+# model.load_model("new_model.txt")
+# print("model loaded")
 
-# model.save_model("new_model.txt")
-# print("model saved")
+model.save_model("new_model.txt")
+print("model saved")
 
 app = FastAPI()
 
@@ -43,15 +43,16 @@ app.add_middleware(
 # with open("app/churn_model.pkl", "rb") as f:
 #     model = pickle.load(f)
 
-@app.post("/getSku/")
+@app.post("/getSkus/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Получение продуктов"
      ,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
+    },
+    "skus" : ["Один", "Два"]
     }
 
 @app.post("/prediction/")
@@ -90,35 +91,38 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
     time.sleep(3)
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Прогнозирование"
      , 
     "plots": plots,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
-    }
-
-@app.post("/analytics/")
-async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-
-    return {"message": "CSV файл успешно загружен!"
-     ,
-    "metrics": {
-        "accuracy": 0.87,
-        "recall": 0.7
-    }
+    },
+    "skus" : ["Один", "Два"]
     }
 
 @app.post("/analytics/")
 async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
-    return {"message": "CSV файл успешно загружен!"
+    return {"message": "CSV файл успешно загружен! Аналитика"
      ,
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
+    },
+    "skus" : ["Один", "Два"]
     }
+
+@app.post("/clustering/")
+async def clustering(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
+
+    return {"message": "CSV файл успешно загружен! Кластеризация"
+     ,
+    "metrics": {
+        "accuracy": 0.87,
+        "recall": 0.7
+    },
+    "skus" : ["Один", "Два"]
     }
 
 
