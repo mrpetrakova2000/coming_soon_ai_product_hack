@@ -1,7 +1,7 @@
 import pandas as pd
 import lightgbm as lgb
-from backend.ML.data_preparation import preprocess, split
-from backend.ML.feature_engineering import apply_feature_engineering
+from data_preparation import preprocess, split
+from feature_engineering import apply_feature_engineering
 
 def get_Lgb_dataset(X_train, Y_train, X_val, Y_val):
     lgbtrain = lgb.Dataset(data=X_train, label=Y_train, feature_name=list(X_train.columns), free_raw_data=False, categorical_feature='')
