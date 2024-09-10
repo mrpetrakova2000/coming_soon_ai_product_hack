@@ -14,14 +14,14 @@ file_path = 'merged_df.csv'
 dataset = LGBMDataset(file_path)
 
 model = LGBMModel()
-model.train(dataset.lgbtrain, dataset.lgbval)
-print("model trained")
+# model.train(dataset.lgbtrain, dataset.lgbval)
+# print("model trained")
 
-# model.load_model("new_model.txt")
-# print("model loaded")
+model.load_model("new_model.txt")
+print("model loaded")
 
-model.save_model("new_model.txt")
-print("model saved")
+# model.save_model("new_model.txt")
+# print("model saved")
 
 app = FastAPI()
 
