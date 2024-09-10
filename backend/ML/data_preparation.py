@@ -18,7 +18,6 @@ def preprocess(data):
         data[col] = le.fit_transform(data[col]) + 1
     return data
 
-
 def split(data, val_size=0.2):
     splitting_date = data.date.min() + (1-val_size)*(data.date.max() - data.date.min())
     train = data.loc[(data["date"] < splitting_date), :]
