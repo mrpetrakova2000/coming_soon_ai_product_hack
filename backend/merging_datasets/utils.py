@@ -4,7 +4,7 @@ def load_dataset(df_name):
     try:
         if not df_name.endswith('.csv'):
             raise ValueError("Only CSV files are supported.")
-        df = pd.read_csv(df_name)
+        df = pd.read_csv(df_name, parse_dates=['date'], index_col=0)
         if df.empty:
             raise ValueError(f"The dataset '{df_name}' is empty.")
         if len(df.columns) == 1:
