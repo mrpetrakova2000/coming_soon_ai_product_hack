@@ -15,7 +15,7 @@ class LGBMModel:
         self.params = params if params is not None else self.default_params
         self.model = None
 
-    def train(self, lgbtrain, lgbval=None, num_boost_round=5000, callbacks=None):
+    def train(self, lgbtrain, lgbval=None, num_boost_round=2000, callbacks=None):
         # Early stopping callback
         default_callbacks = [lgb.early_stopping(stopping_rounds=self.params.get('early_stopping_rounds', 3))]
         if callbacks is None:
