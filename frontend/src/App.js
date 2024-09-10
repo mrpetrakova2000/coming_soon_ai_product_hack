@@ -12,6 +12,13 @@ function App() {
   const [message, setMessage] = useState("");
   const [plots, setPlots] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
+
+  const tabs = {
+    0: 'Прогноз',
+    1: 'Аналитика',
+    2: 'Кластеризация'
+  };
 
   const handleFileChange = (event) => {
     event.preventDefault();
@@ -21,8 +28,8 @@ function App() {
     const csvFiles = files.filter(file => file.name.endsWith('.csv'));
 
     if (csvFiles.length !== files.length) {
-        setError(true);
-        setMessage("Пожалуйста, загрузите только файлы с расширением .csv");
+      setError(true);
+      setMessage("Пожалуйста, загрузите только файлы с расширением .csv");
     }
     else {
       setFiles(files);
@@ -78,54 +85,71 @@ function App() {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
 
   return (
     <div className="App">
-      <h1>Загрузить CSV файлы</h1>
-      <form onSubmit={handleSubmit}>
-        <div className='drop-area'>
-          {drag
-            ? <div className='files-down'
-              onDragStart={e => dragStartHandler(e)}
-              onDragLeave={e => dragLeaveHandler(e)}
-              onDragOver={e => dragStartHandler(e)}
-              onDrop={e => handleFileChange(e)}
-            > <p>Отпустите файлы, чтобы загрузить </p></div>
-            : <div className='files-up'
-              onDragStart={e => dragStartHandler(e)}
-              onDragLeave={e => dragLeaveHandler(e)}
-              onDragOver={e => dragStartHandler(e)}
-            > <p>Переместите файлы, чтобы загрузить </p></div>
-          }
-        </div>
-        
-        {files.length > 0 && (<div>
-          <h2>Выбранные файлы:</h2>
-          <ul className='files-list'>
-            {files.map((file, index) => (
-              <li key={index}>{file.name} <button className="remove-file" type="button" onClick={() => removeFile(index)}>Удалить файл</button></li> 
-            ))}
-          </ul>
-        </div>)}
-
-        {files.length > 0 && 
-        (<p >Выберите период предсказания:</p>)}
-        {files.length > 0 && 
-        (<select className='predict-period'
-                id="predictionPeriod"
-                value={predictionPeriod}
-                onChange={(e) => setPredictionPeriod(e.target.value)}
+      <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
+      <div className='form-container'>
+        <div className="tabs">
+          {Object.keys(tabs).map((tab) => (
+            <div
+              key={tab}
+              className={`tab ${activeTab === Number(tab) ? 'active' : ''}`}
+              onClick={() => handleTabChange(Number(tab))}
             >
-                <option value="1">1 день</option>
-                <option value="7">1 неделя</option>
-                <option value="30">1 месяц</option>
-        </select>)}
+              {tabs[tab]}
+            </div>
+          ))}
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className='drop-area'>
+            {drag
+              ? <div className='files-down'
+                onDragStart={e => dragStartHandler(e)}
+                onDragLeave={e => dragLeaveHandler(e)}
+                onDragOver={e => dragStartHandler(e)}
+                onDrop={e => handleFileChange(e)}
+              > <p>Отпустите CSV файлы, чтобы загрузить </p></div>
+              : <div className='files-up'
+                onDragStart={e => dragStartHandler(e)}
+                onDragLeave={e => dragLeaveHandler(e)}
+                onDragOver={e => dragStartHandler(e)}
+              > <p>Переместите CSV файлы, чтобы загрузить </p></div>
+            }
+          </div>
 
-        {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">Upload files</button>)}
-      </form>
+          {files.length > 0 && (<div>
+            <h3>Выбранные файлы:</h3>
+            <ul className='files-list'>
+              {files.map((file, index) => (
+                <li key={index}>{file.name} <button className="remove-file" type="button" onClick={() => removeFile(index)}>Удалить файл</button></li>
+              ))}
+            </ul>
+          </div>)}
+
+          {files.length > 0 && activeTab == 0 &&
+            (<h3>Выберите период предсказания:</h3>)}
+          {files.length > 0 && activeTab == 0 &&
+            (<select className='predict-period'
+              id="predictionPeriod"
+              value={predictionPeriod}
+              onChange={(e) => setPredictionPeriod(e.target.value)}
+            >
+              <option value="1">1 день</option>
+              <option value="7">1 неделя</option>
+              <option value="30">1 месяц</option>
+            </select>)}
+
+          {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">Upload files</button>)}
+        </form>
+      </div>
 
       {isLoading && <p>Загрузка ...</p>}
-      {error && <p className='error'>Ошибка!</p>}
+      
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
       {!error && !isLoading && loaded &&

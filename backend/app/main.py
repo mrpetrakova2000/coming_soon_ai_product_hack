@@ -45,7 +45,7 @@ app.add_middleware(
 
 @app.post("/getSku/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    
+
     return {"message": "CSV файл успешно загружен!"
      ,
     "metrics": {
@@ -101,7 +101,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
 
 @app.post("/analytics/")
 async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    
+
     return {"message": "CSV файл успешно загружен!"
      ,
     "metrics": {
@@ -112,7 +112,7 @@ async def analytics(files: List[UploadFile] = File(...), prediction_period: int 
 
 @app.post("/analytics/")
 async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    
+
     return {"message": "CSV файл успешно загружен!"
      ,
     "metrics": {
@@ -130,7 +130,7 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
                 'y': y1,
                 'type': 'scatter',
                 'mode': 'lines+markers',
-                'marker': {'color': 'blue'},
+                'marker': {'color': '#000'},
                 'name': trace1_name
             },
             {
@@ -138,7 +138,7 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
                 'y': y2,
                 'type': 'scatter',
                 'mode': 'lines+markers',
-                'marker': {'color': 'red'},
+                'marker': {'color': '#cd78f0'},
                 'name': trace2_name
             }
         ],
