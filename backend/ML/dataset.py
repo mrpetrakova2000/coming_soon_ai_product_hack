@@ -1,7 +1,7 @@
 import pandas as pd
 import lightgbm as lgb
-from backend.ML.data_preparation import preprocess, split
-from backend.ML.feature_engineering import apply_feature_engineering
+from data_preparation import preprocess, split
+from feature_engineering import apply_feature_engineering
 
 def get_Lgb_dataset(X_train, Y_train, X_val, Y_val):
     lgbtrain = lgb.Dataset(data=X_train, label=Y_train, feature_name=list(X_train.columns), free_raw_data=False, categorical_feature='')
@@ -21,8 +21,8 @@ def split_and_get_features(data, target_column='cnt'):
     return X_train, Y_train, X_val, Y_val, lgbtrain, lgbval
 
 class LGBMDataset:
-    def __init__(self, file_path):
-        self.data = pd.read_csv(file_path, parse_dates=['date'], index_col=0)
+    def __init__(self, data):
+        self.data = data
         self.data = preprocess(self.data)
         self.X_train, self.Y_train, self.X_val, self.Y_val, self.lgbtrain, self.lgbval = split_and_get_features(self.data)
 
