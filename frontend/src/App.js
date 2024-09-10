@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
+import ParametersDisplay from './ParametersDisplay';
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
   const [plots, setPlots] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
+  const [parameters, setParameters] = useState([])
 
   const tabs = {
     0: 'Прогноз',
@@ -57,6 +59,7 @@ function App() {
       setError(false);
       setMessage(response.data.message);
       setPlots(response.data.plots);
+      setParameters(response.data.parameters)
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
@@ -87,12 +90,19 @@ function App() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setLoaded(false);
   };
+
+  /*const data = [
+    { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
+    { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
+  ];*/
 
 
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
+      
       <div className='form-container'>
         <div className="tabs">
           {Object.keys(tabs).map((tab) => (
@@ -132,7 +142,7 @@ function App() {
           </div>)}
 
           {files.length > 0 && activeTab == 0 &&
-            (<h3>Выберите период предсказания:</h3>)}
+            (<h3>Выберите период прогнозирования:</h3>)}
           {files.length > 0 && activeTab == 0 &&
             (<select className='predict-period'
               id="predictionPeriod"
@@ -149,9 +159,16 @@ function App() {
       </div>
 
       {isLoading && <p>Загрузка ...</p>}
-      
+
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
+
+      {!error && loaded && activeTab == 1 && !isLoading &&
+      (<div className="container">
+        <h2 className="heading">Отчёт</h2>
+        <ParametersDisplay data={parameters} />
+      </div>)}
+
       {!error && !isLoading && loaded &&
         plots.map((plot, index) => (
           <Plot
