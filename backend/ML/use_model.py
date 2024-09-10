@@ -1,5 +1,5 @@
 from dataset import LGBMDataset
-from backend.ml_pipeline.model import LGBMModel
+from model import LGBMModel
 
 # Example usage
 file_path = 'path/to/your/data.csv'
