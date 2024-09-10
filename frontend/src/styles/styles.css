@@ -7,6 +7,11 @@
     url('../fonts/ppneuemontrealmono-book.svg') format('svg');
 }
 
+*, *:after, *:before {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
 /* Общие стили */
 body {
   font-family: Ppneuemontrealmono, sans-serif;
@@ -223,4 +228,53 @@ p {
   /* Жирный шрифт для активной вкладки */
   color: #cd78f0;
   /* Цвет текста активной вкладки */
+}
+
+.report-container {
+  margin-bottom: 50px;
+}
+
+.report-theme-container {
+  max-width: 800px;
+  min-width: 800px;
+  margin-bottom: 20px;
+}
+
+.heading {
+  color: #cd78f0;
+  text-align: center;
+}
+
+.title {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.key {
+  text-align: left;
+}
+
+.data-row {
+  display: flex; /* Используем flexbox для выравнивания */
+  align-items: center; /* Центрируем элементы по вертикали */
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.dots {
+  flex-grow: 1; /* Занимает оставшееся пространство */
+  height: 1px; /* Высота линии */
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 5px,
+    white 5px,
+    white 6px
+  ); /* Создаем линию точек */
+  margin-top: 10px;
+}
+
+.value {
+  text-align: right; /* Выравнивание текста по правому краю */
 }

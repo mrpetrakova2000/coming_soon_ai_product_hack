@@ -17,8 +17,8 @@ model = LGBMModel()
 # model.train(dataset.lgbtrain, dataset.lgbval)
 # print("model trained")
 
-model.load_model("new_model.txt")
-print("model loaded")
+# model.load_model("new_model.txt")
+# print("model loaded")
 
 # model.save_model("new_model.txt")
 # print("model saved")
@@ -61,31 +61,32 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     # data = prepare_data_fo_plot_from_original_dataset()
     # predict = prepare_data_fo_plot_from_predict()
     # metrics = extract_metrics(predict)
-    for file in files:
-        print(file)
-    
-    print("prediction period")
-    print(prediction_period)
 
-    print("length of prediction")
-    y = model.predict(dataset.X_val)
-    f = open('file.txt', 'w')
-    for y_i in y:
-        f.write(str(y_i) + ' ')
-    f.close()
+    # for file in files:
+    #     print(file)
+    
+    # print("prediction period")
+    # print(prediction_period)
+
+    # print("length of prediction")
+    # y = model.predict(dataset.X_val)
+    # f = open('file.txt', 'w')
+    # for y_i in y:
+    #     f.write(str(y_i) + ' ')
+    # f.close()
     #print(model.predict(dataset.X_val))
 
-    print("end predict")
+    # print("end predict")
 
     x1 = ['2013-10-04 22:23:00', '2013-10-05 22:23:00', '2013-10-06 22:23:00']
     y1 = [1, 3, 6]
     x2 = ['2013-10-06 22:23:00', '2013-10-07 22:23:00', '2013-10-08 22:23:00', '2013-10-09 22:23:00']
     y2 = [6, 5, 3, 6]
-    title = 'Предсказание продаж товара X'
+    title = 'Прогнозирование продаж товара X'
     x_axis_title = 'Дата'
     y_axis_title = 'Число продаж'
     trace1_name = 'Реальные данные'
-    trace2_name = 'Предсказанные данные'
+    trace2_name = 'Прогноз'
 
     plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
@@ -96,7 +97,11 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     "metrics": {
         "accuracy": 0.87,
         "recall": 0.7
-    }
+    },
+    "parameters": [
+        { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
+        { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
+    ]
     }
 
 @app.post("/analytics/")
@@ -154,6 +159,13 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
             },
             'yaxis': {
                 'title': y_axis_title
+            },
+            'legend': {
+                'orientation': 'h',  
+                'yanchor': 'bottom',  
+                'y': -0.5,  
+                'xanchor': 'center',  
+                'x': 0.5 
             }
         }
     }
