@@ -1,45 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './DropdownSearch.css'; // Импортируем CSS файл для стилей
+import React, { useState, useRef, useEffect  } from 'react';
 
-const SkusSearchDisplay = ({ skus }) => {
-  const [selectedSKU, setSelectedSKU] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+const SkusSearchDisplay = ({ skus, onSelect }) => {
+    const [selectedSKU, setSelectedSKU] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+        setDropdownOpen(true); // Открываем dropdown при вводе
+    };
 
-  const handleSelectSKU = (sku) => {
-    setSelectedSKU(sku);
-  };
+    const handleSelectSKU = (sku) => {
+        setSelectedSKU(sku);
+        setSearchTerm(sku);
+        onSelect(sku);
+        setDropdownOpen(false); // Закрываем dropdown после выбора
+    };
 
-  const filteredSKUs = skus.filter((sku) =>
-    sku.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    // Извлекаем значения из объекта skus и фильтруем их
+    const filteredSKUs = Object.values(skus).filter((sku) =>
+        sku.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
 
-  return (
-    <div className="dropdown">
-      <input
-        type="text"
-        placeholder="Выберите продукт: "
-        value={searchTerm}
-        onChange={handleSearch}
-      />
-      <ul className="dropdown-list">
-        {filteredSKUs.map((sku) => (
-          <li
-            key={sku}
-            className={`dropdown-item ${selectedSKU === sku ? 'selected' : ''}`}
-            onClick={() => handleSelectSKU(sku)}
-          >
-            {sku}
-          </li>
-        ))}
-      </ul>
-      {selectedSKU && <p>Выбранный продукт: {selectedSKU}</p>}
-    </div>
-  );
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setDropdownOpen(false); // Закрываем dropdown при клике вне его
+        }
+    };
+
+    useEffect(() => {
+        // Добавляем обработчик клика вне dropdown
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    return (
+        <div className="dropdown" ref={dropdownRef}>
+            <input
+                type="text"
+                placeholder="Введите название продукта "
+                value={searchTerm}
+                onChange={handleSearch}
+                onFocus={() => setDropdownOpen(true)} // Открываем dropdown при фокусе на input
+            />
+            {isDropdownOpen &&
+                (<ul className="dropdown-list">
+                    {filteredSKUs.map((sku, index) => (
+                        <li
+                            key={index}
+                            className={`dropdown-item ${selectedSKU === sku ? 'selected' : ''}`}
+                            onClick={() => handleSelectSKU(sku)}
+                        >
+                            {sku}
+                        </li>
+                    ))}
+                </ul>)}
+            <h4>Всего продуктов: {skus.length}</h4>
+        </div>
+    );
 };
 
 export default SkusSearchDisplay;

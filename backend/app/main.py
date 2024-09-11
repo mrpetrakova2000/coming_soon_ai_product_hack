@@ -14,8 +14,8 @@ from typing import List
 # dataset = LGBMDataset(file_path)
 
 # model = LGBMModel()
-# # model.train(dataset.lgbtrain, dataset.lgbval)
-# # print("model trained")
+# model.train(dataset.lgbtrain, dataset.lgbval)
+# print("model trained")
 
 # model.load_model("new_model.txt")
 # print("model loaded")
@@ -43,6 +43,8 @@ app.add_middleware(
 # with open("app/churn_model.pkl", "rb") as f:
 #     model = pickle.load(f)
 
+skus = ["Один", "Два", "Три", "Четыре", "Пять", "Шесть", "Семь", "Восемь"]
+
 @app.post("/getSkus/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
 
@@ -52,7 +54,7 @@ async def getSku(files: List[UploadFile] = File(...), prediction_period: int = F
         "accuracy": 0.87,
         "recall": 0.7
     },
-    "skus" : ["Один", "Два"]
+    "skus" : sorted(skus)
     }
 
 @app.post("/prediction/")
@@ -77,7 +79,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     # f.close()
     #print(model.predict(dataset.X_val))
 
-    # print("end predict")
+    print("end predict")
 
     x1 = ['2013-10-04 22:23:00', '2013-10-05 22:23:00', '2013-10-06 22:23:00']
     y1 = [1, 3, 6]
@@ -104,7 +106,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
         { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
     ]
     },
-    "skus" : ["Один", "Два"]
+    "skus" : sorted(skus)
     }
 
 @app.post("/analytics/")
@@ -116,7 +118,7 @@ async def analytics(files: List[UploadFile] = File(...), prediction_period: int 
         "accuracy": 0.87,
         "recall": 0.7
     },
-    "skus" : ["Один", "Два"],
+    "skus" : sorted(skus),
     "parameters": [
         { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
         { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
@@ -132,7 +134,7 @@ async def clustering(files: List[UploadFile] = File(...), prediction_period: int
         "accuracy": 0.87,
         "recall": 0.7
     },
-    "skus" : ["Один", "Два"]
+    "skus" : sorted(skus)
     }
 
 
@@ -181,4 +183,3 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="0.0.0.0", port=8000)
-    
