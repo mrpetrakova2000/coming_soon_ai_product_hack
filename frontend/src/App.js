@@ -227,7 +227,7 @@ function updateApiMethod() {
             </select>} */
 
           }
-          {choosedSku && <h3>Выбранный продукт: {choosedSku}</h3>}
+          {choosedSku && !allSkusFlag && <h3>Выбранный продукт: {choosedSku}</h3>}
 
           {files.length > 0 && activeTab == 0 &&
             (<h3>Выберите период прогноза:</h3>)}

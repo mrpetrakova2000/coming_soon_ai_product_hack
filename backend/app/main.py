@@ -104,8 +104,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     "parameters": [
         { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
         { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
-    ]
-    },
+    ],
     "skus" : sorted(skus)
     }
 
