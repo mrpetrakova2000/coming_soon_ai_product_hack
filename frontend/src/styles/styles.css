@@ -281,11 +281,11 @@ p {
 
 .dropdown {
   position: relative;
-  width: 300px; /* Ширина выпадающего списка */
+  width: 300px; /* Ширина родительского контейнера */
 }
 
 input {
-  width: 100%;
+  width: 100%; /* Ширина input */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -299,11 +299,10 @@ input {
   border-radius: 4px;
   max-height: 200px; /* Максимальная высота списка */
   overflow-y: auto; /* Прокрутка при переполнении */
-  display: none; /* Скрываем список по умолчанию */
-}
-
-.dropdown-list.show {
-  display: block; /* Показываем список, когда он должен быть виден */
+  position: absolute; /* Позволяет располагать список над другими элементами */
+  background-color: white; /* Цвет фона списка */
+  z-index: 1000; /* Убедитесь, что список отображается поверх других элементов */
+  width: 100%; /* Устанавливаем ширину списка равной ширине input */
 }
 
 .dropdown-item {

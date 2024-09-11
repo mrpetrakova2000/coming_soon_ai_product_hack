@@ -2,6 +2,7 @@ import React, {useState, useMemo } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
 import ParametersDisplay from './ParametersDisplay';
+import SkusSearchDisplay from './SkusSearchDisplay';
 
 
 function App() {
@@ -71,7 +72,6 @@ function App() {
       setError(false);
       setMessage(response.data.message);
       setPlots(response.data.plots);
-      setParameters(response.data.parameters)
       setSkus(response.data.skus);
       setParameters(response.data.parameters)
       console.log(response);
@@ -156,7 +156,6 @@ function updateApiMethod() {
     }
   }
 
-
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
@@ -213,7 +212,9 @@ function updateApiMethod() {
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
            (<h3>Выберите продукт:</h3>)}
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
-          <select
+          <SkusSearchDisplay skus={skus} onSelect={setChoosedSku}/>
+
+          /* <select
               className='predict-period'
               id="predictionPeriod"
               value={choosedSku}
@@ -223,7 +224,10 @@ function updateApiMethod() {
               {skus.map((sku, index) => (
                 <option key={index} value={sku} >{sku}</option>
               ))}
-            </select>}
+            </select>} */
+
+          }
+          {choosedSku && <h3>Выбранный продукт: {choosedSku}</h3>}
 
           {files.length > 0 && activeTab == 0 &&
             (<h3>Выберите период прогноза:</h3>)}
@@ -247,19 +251,13 @@ function updateApiMethod() {
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
 
-      {!error && loaded && activeTab == 1 && !isLoading &&
+      {!error && !isLoading && activeTab == 1 && loaded && parameters &&
       (<div className="container">
         <h2 className="heading">Отчёт</h2>
         <ParametersDisplay data={parameters} />
       </div>)}
 
-      {!error && loaded && activeTab == 1 && !isLoading &&
-      (<div className="container">
-        <h2 className="heading">Отчёт</h2>
-        <ParametersDisplay data={parameters} />
-      </div>)}
-
-      {!error && !isLoading && loaded &&
+      {!error && !isLoading && loaded && plots &&
         plots.map((plot, index) => (
           <Plot
             key={index}
