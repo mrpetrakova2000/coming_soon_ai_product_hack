@@ -1,6 +1,8 @@
 import React, {useState, useMemo } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
+import ParametersDisplay from './ParametersDisplay';
+import SkusSearchDisplay from './SkusSearchDisplay';
 
 
 function App() {
@@ -17,6 +19,7 @@ function App() {
   const [skus, setSkus] = useState([]);
   // const [isSkuChoosed, setIsSkuChoosed] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
+  const [parameters, setParameters] = useState([])
 
   const tabs = {
     0: 'Прогноз',
@@ -70,6 +73,7 @@ function App() {
       setMessage(response.data.message);
       setPlots(response.data.plots);
       setSkus(response.data.skus);
+      setParameters(response.data.parameters)
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
@@ -152,7 +156,6 @@ function updateApiMethod() {
     }
   }
 
-
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
@@ -209,7 +212,9 @@ function updateApiMethod() {
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
            (<h3>Выберите продукт:</h3>)}
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
-          <select 
+          <SkusSearchDisplay skus={skus} onSelect={setChoosedSku}/>
+
+          /* <select
               className='predict-period'
               id="predictionPeriod"
               value={choosedSku}
@@ -219,7 +224,10 @@ function updateApiMethod() {
               {skus.map((sku, index) => (
                 <option key={index} value={sku} >{sku}</option>
               ))}
-            </select>}  
+            </select>} */
+
+          }
+          {choosedSku && !allSkusFlag && <h3>Выбранный продукт: {choosedSku}</h3>}
 
           {files.length > 0 && activeTab == 0 &&
             (<h3>Выберите период прогноза:</h3>)}
@@ -233,7 +241,7 @@ function updateApiMethod() {
               <option value="7">1 неделя</option>
               <option value="30">1 месяц</option>
             </select>)}
-          
+
           {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">{submitButtonName}</button>)}
         </form>
       </div>
@@ -242,6 +250,13 @@ function updateApiMethod() {
       
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
+
+      {!error && !isLoading && activeTab == 1 && loaded && parameters &&
+      (<div className="container">
+        <h2 className="heading">Отчёт</h2>
+        <ParametersDisplay data={parameters} />
+      </div>)}
+
       {!error && !isLoading && loaded && plots &&
         plots.map((plot, index) => (
           <Plot
