@@ -278,3 +278,44 @@ p {
 .value {
   text-align: right; /* Выравнивание текста по правому краю */
 }
+
+.dropdown {
+  position: relative;
+  width: 300px; /* Ширина выпадающего списка */
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px; /* Максимальная высота списка */
+  overflow-y: auto; /* Прокрутка при переполнении */
+  display: none; /* Скрываем список по умолчанию */
+}
+
+.dropdown-list.show {
+  display: block; /* Показываем список, когда он должен быть виден */
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0; /* Цвет фона при наведении */
+}
+
+.dropdown-item.selected {
+  background-color: #d0e0ff; /* Цвет фона для выбранного элемента */
+  font-weight: bold; /* Выделяем выбранный элемент жирным шрифтом */
+}
