@@ -110,7 +110,6 @@ function App() {
     setChoosedSku(null);
     setAllSkusFlag(true);
     setSkus(null);
-    setLoaded(false);
   };
 
 function updateApiMethod() {
@@ -244,7 +243,7 @@ function updateApiMethod() {
       </div>
 
       {isLoading && <p>Загрузка ...</p>}
-
+      
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
 
@@ -253,8 +252,6 @@ function updateApiMethod() {
         <h2 className="heading">Отчёт</h2>
         <ParametersDisplay data={parameters} />
       </div>)}
-
-      {!error && !isLoading && loaded && plots &&
 
       {!error && loaded && activeTab == 1 && !isLoading &&
       (<div className="container">
