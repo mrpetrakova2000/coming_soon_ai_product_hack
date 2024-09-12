@@ -25,4 +25,7 @@ def inference_model_on_sku(feature_vector: np.ndarray,
     model_path = find_model_path(folder_with_models, granularity, cluster)
     model = get_model(model_path)
     prediction = get_prediction(model, feature_vector)
-    return prediction
+
+    rounded_predictions = int(np.abs(np.round(prediction)))
+
+    return rounded_predictions

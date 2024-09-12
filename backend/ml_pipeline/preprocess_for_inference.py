@@ -4,7 +4,7 @@ from backend.ml_pipeline.feature_engineering_tools import *
 
 def calculate_features_for_inference(data: pd.DataFrame, params: dict, train: bool = True) -> pd.DataFrame:
     # import parameters
-    target_column = params.get('target_column', None)
+    target_column = params.get('target_column')
     datetime_column = params.get('datetime_column', None)
     lag_range = params.get('lag_range', None)
     lag_difference = params.get('lag_difference', None)
