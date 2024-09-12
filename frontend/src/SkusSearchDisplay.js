@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect  } from 'react';
 
-const SkusSearchDisplay = ({ skus, onSelect }) => {
+const SkusSearchDisplay = ({ data, onSelect, mode="sku" }) => {
     const [selectedSKU, setSelectedSKU] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    const fillText = (mode == "sku") ? "продуктов" : "категорий";
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
@@ -19,7 +21,7 @@ const SkusSearchDisplay = ({ skus, onSelect }) => {
     };
 
     // Извлекаем значения из объекта skus и фильтруем их
-    const filteredSKUs = Object.values(skus).filter((sku) =>
+    const filteredSKUs = Object.values(data).filter((sku) =>
         sku.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
 
@@ -41,7 +43,7 @@ const SkusSearchDisplay = ({ skus, onSelect }) => {
         <div className="dropdown" ref={dropdownRef}>
             <input
                 type="text"
-                placeholder="Введите название продукта "
+                placeholder="Введите название"
                 value={searchTerm}
                 onChange={handleSearch}
                 onFocus={() => setDropdownOpen(true)} // Открываем dropdown при фокусе на input
@@ -58,7 +60,7 @@ const SkusSearchDisplay = ({ skus, onSelect }) => {
                         </li>
                     ))}
                 </ul>)}
-            <h4>Всего продуктов: {skus.length}</h4>
+            <h4>{"Всего " + fillText + ": " + data.length}</h4>
         </div>
     );
 };
