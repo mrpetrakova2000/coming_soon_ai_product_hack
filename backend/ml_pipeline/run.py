@@ -2,14 +2,17 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from sklearn.preprocessing import StandardScaler
+import os
 
 from backend.ml_pipeline.preprocess_for_inference import calculate_features_for_inference
 from backend.ml_pipeline.configs.feature_params import one_day_params, seven_day_params, thirty_day_params
 from backend.ml_pipeline.inference_tools import inference_model_on_sku
 from backend.ml_pipeline.postprocess_predictions import postproces_predictions
 
-FOLDER_WITH_MODELS = Path('backend/ml_pipeline/models')
-CLUSTERS = Path('backend/ml_pipeline/assets/clusters.csv')
+print(os.getcwd())
+
+FOLDER_WITH_MODELS = Path('../ml_pipeline/models')
+CLUSTERS = Path('../ml_pipeline/assets/clusters.csv')
 clusters_df = pd.read_csv(CLUSTERS)
 
 def get_feature_vector(data: pd.DataFrame, day=-1) -> np.ndarray:
@@ -37,7 +40,7 @@ def run_inference_on_sku(input_data: pd.DataFrame) -> tuple:
     input_data : pd.Dataframe ; should contain 'cnt' and 'date' columns
     """
     data = input_data[['cnt', 'date']] 
-
+   
     # Assign cluster
     cluster = get_cluster(data.copy(), clusters_df)
 
