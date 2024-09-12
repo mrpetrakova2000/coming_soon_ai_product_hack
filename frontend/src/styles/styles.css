@@ -1,0 +1,320 @@
+@font-face {
+  font-family: 'Ppneuemontrealmono';
+  src: url('../fonts/ppneuemontrealmono-book.eot');
+  src: url('../fonts/ppneuemontrealmono-book.woff') format('woff'),
+    url('../fonts/ppneuemontrealmono-book.woff2') format('woff2'),
+    url('../fonts/ppneuemontrealmono-book.ttf') format('truetype'),
+    url('../fonts/ppneuemontrealmono-book.svg') format('svg');
+}
+
+*, *:after, *:before {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+/* Общие стили */
+body {
+  font-family: Ppneuemontrealmono, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  color: white;
+  background-color: #000;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1 {
+  color: #fff;
+  margin-bottom: 40px;
+}
+
+/* Контейнер для формы */
+.form-container {
+  width: 100%;
+  /* Занимает всю ширину */
+  max-width: 800px;
+  /* Максимальная ширина контейнера */
+}
+
+/* Стили для формы загрузки */
+form {
+  background-color: white;
+  color: black;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  /* Занимает всю ширину контейнера */
+  box-sizing: border-box;
+  /* Включает отступы и границы в ширину */
+}
+
+.drop-area {
+  height: 150px;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  position: relative;
+}
+
+.drop-area:hover {
+  border-color: black;
+}
+
+.drop-area p {
+  color: #aaa;
+}
+
+.files-up,
+.files-down {
+  width: 100%;
+  height: 100%;
+  font-size: 18px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.files-down {
+  border: 2px solid #000;
+  border-radius: 10px;
+}
+
+.files-up {
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+}
+
+.files-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.files-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Стили для кнопки загрузки */
+.upload-button {
+  background-color: #cd78f0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 18px 20px;
+  font-size: inherit;
+  cursor: pointer;
+  transition: color .3s ease, background-color .3s ease;
+  display: block;
+  margin-top: 20px;
+  width: 100%;
+  font-family: inherit;
+}
+
+.upload-button:hover {
+  color: #cd78f0;
+  background: #F5F5FA;
+}
+
+.upload-button:active {
+  color: #cd78f0;
+  background: #F5F5FA;
+}
+
+/* Стили для сообщений об ошибке и загрузки */
+p {
+  color: #e8e6e6;
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+.error {
+  color: #e26363;
+}
+
+.loading {
+  color: #007bff;
+}
+
+/* Стили для графика */
+.plot {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.remove-file {
+  background-color: transparent;
+  color: #cd78f0;
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.remove-file:hover {
+  color: #ff0019;
+}
+
+.error {
+  color: #fff;
+  background-color: #e26363;
+  border: 1px solid #e26363;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.predict-period {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #cd78f0;
+  /* Цвет нижней границы */
+  margin-bottom: 20px;
+  /* Отступ снизу */
+  width: 100%;
+  /* Занимает всю ширину */
+}
+
+.tab {
+  flex: 1;
+  /* Занимает равное пространство */
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+  /* Центрирование текста */
+}
+
+.tab:hover {
+  background-color: #f5d6fb;
+  /* Цвет при наведении */
+}
+
+.active {
+  border-bottom: 3px solid #cd78f0;
+  /* Цвет активной вкладки */
+  font-weight: bold;
+  /* Жирный шрифт для активной вкладки */
+  color: #cd78f0;
+  /* Цвет текста активной вкладки */
+}
+
+.report-container {
+  margin-bottom: 50px;
+}
+
+.report-theme-container {
+  max-width: 800px;
+  min-width: 800px;
+  margin-bottom: 20px;
+}
+
+.heading {
+  color: #cd78f0;
+  text-align: center;
+}
+
+.title {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.key {
+  text-align: left;
+}
+
+.data-row {
+  display: flex; /* Используем flexbox для выравнивания */
+  align-items: center; /* Центрируем элементы по вертикали */
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.dots {
+  flex-grow: 1; /* Занимает оставшееся пространство */
+  height: 1px; /* Высота линии */
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 5px,
+    white 5px,
+    white 6px
+  ); /* Создаем линию точек */
+  margin-top: 10px;
+}
+
+.value {
+  text-align: right; /* Выравнивание текста по правому краю */
+}
+
+.dropdown {
+  position: relative;
+  width: 300px; /* Ширина родительского контейнера */
+}
+
+input {
+  width: 100%; /* Ширина input */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px; /* Максимальная высота списка */
+  overflow-y: auto; /* Прокрутка при переполнении */
+  position: absolute; /* Позволяет располагать список над другими элементами */
+  background-color: white; /* Цвет фона списка */
+  z-index: 1000; /* Убедитесь, что список отображается поверх других элементов */
+  width: 100%; /* Устанавливаем ширину списка равной ширине input */
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0; /* Цвет фона при наведении */
+}
+
+.dropdown-item.selected {
+  background-color: #d0e0ff; /* Цвет фона для выбранного элемента */
+  font-weight: bold; /* Выделяем выбранный элемент жирным шрифтом */
+}
