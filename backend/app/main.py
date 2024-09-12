@@ -7,7 +7,8 @@ import time
 import re
 from typing import List
 from backend.app.analytics import *
-from backend.merging_datasets.merging import merging
+from backend.merging_datasets.main import merging
+from backend.ml_pipeline.run import run_inference_on_sku
 
 # from backend.ML.dataset import LGBMDataset
 # from backend.ML.model import LGBMModel
@@ -102,21 +103,15 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
         }
     }
 
-def fetch_file_by_fullmatch_filename_to_regex(files, regex):
-    for file in files:
-        if re.fullmatch(regex, file.filename):
-            return file
-    return None
-
 plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
 @app.post("/getSkus/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    time.sleep(3)
+    merged_df = fetch_merged_df(files)
 
     return {"message": "CSV файл успешно загружен! Получение продуктов"
      ,
-    "skus" : sorted(skus)
+    "skus" : sorted(merged_df['item_id'].unique())
     }
 
 @app.post("/getClusters/")
@@ -129,7 +124,7 @@ async def getClusters(files: List[UploadFile] = File(...), prediction_period: in
     }
 
 @app.post("/prediction/")
-async def prediction(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
+async def prediction(files: List[UploadFile] = File(...), prediction_period: int = Form(...), choosed_sku: str = Form(...)):
     # df = read_data()
     # model.predict(df)
     # data = prepare_data_fo_plot_from_original_dataset()
@@ -152,6 +147,10 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
 
     # print("end predict")
 
+    merged_df = fetch_merged_df(files)
+    merged_df = merged_df.loc[merged_df['item_id'] == choosed_sku]
+    print(run_inference_on_sku(merged_df))
+    
     time.sleep(3)
     return {"message": "CSV файл успешно загружен! Прогнозирование"
      , 
@@ -164,20 +163,10 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     }
 
 @app.post("/analytics/")
-async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    time.sleep(3)
-
-    return {"message": "CSV файл успешно загружен! Аналитика"
-     ,
-    "metrics": {
-        "accuracy": 0.87,
-        "recall": 0.7
-    },
-    "parameters": [
-        { "Анализ продаж": { "кол-во проданных товаров": 10, "выручка": 11 } },
-        { "Анализ трендов": { "среднее кол-во проданных товаров за месяц": 2 } }
-    ]
-    }
+async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...), choosed_sku: str = Form(...)):
+    merged_df = fetch_merged_df(files)
+    merged_df = merged_df.loc[merged_df['item_id'] == choosed_sku]
+    return fetch_analytics(merged_df)
 
 @app.post("/clustering/")
 async def clustering(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
@@ -193,6 +182,21 @@ async def clustering(files: List[UploadFile] = File(...), prediction_period: int
     "clusters" : sorted(clusters)
     }
 
+
+def fetch_merged_df(files):
+    shop_sales = fetch_file_by_fullmatch_filename_to_regex(files, r'shop_sales(?!.*(?:prices|dates)).*\.csv$')
+    shop_sales_dates = fetch_file_by_fullmatch_filename_to_regex(files, r'shop_sales_dates\w*\.csv$')
+    shop_sales_prices = fetch_file_by_fullmatch_filename_to_regex(files, r'shop_sales_prices\w*\.csv$')
+    print(shop_sales, shop_sales_dates, shop_sales_prices)
+    merged_df = merging(shop_sales.file, shop_sales_dates.file, shop_sales_prices.file)
+    return merged_df
+
+
+def fetch_file_by_fullmatch_filename_to_regex(files, regex):
+    for file in files:
+        if re.fullmatch(regex, file.filename):
+            return file
+    return None
 
 
 

@@ -63,6 +63,8 @@ function App() {
     });
     console.log(predictionPeriod)
     formData.append('prediction_period', Number(predictionPeriod)); // Добавляем выбранный период предсказания
+    formData.append('choosed_sku', String(choosedSku)); // Добавляем выбранный период предсказания
+
 
     try {
       setIsLoading(true)
