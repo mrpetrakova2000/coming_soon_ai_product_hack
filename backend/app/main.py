@@ -5,10 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import time
 import re
+import csv
 from typing import List
 from backend.app.analytics import *
+from backend.app.prediction import *
 from backend.merging_datasets.main import merging
-from backend.ml_pipeline.run import run_inference_on_sku
+
 
 # from backend.ML.dataset import LGBMDataset
 # from backend.ML.model import LGBMModel
@@ -103,7 +105,7 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
         }
     }
 
-plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
+# plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
 @app.post("/getSkus/")
 async def getSku(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
@@ -115,10 +117,14 @@ async def getSku(files: List[UploadFile] = File(...), prediction_period: int = F
     }
 
 @app.post("/getClusters/")
-async def getClusters(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
-    time.sleep(3)
+async def getClusters():
+    with open('categories.csv', encoding="utf-8") as f:
+        reader = csv.reader(f, delimiter=';')
+        clusters = [item for sublist in reader for item in sublist]
 
-    return {"message": "CSV файл успешно загружен! Получение категорий продуктов"
+    print(clusters)
+
+    return {"message": "Получение категорий продуктов"
      ,
     "clusters" : sorted(clusters)
     }
@@ -131,8 +137,8 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
     # predict = prepare_data_fo_plot_from_predict()
     # metrics = extract_metrics(predict)
 
-    for file in files:
-        print(file.filename)
+    # for file in files:
+    #     print(file.filename)
     
     # print("prediction period")
     # print(prediction_period)
@@ -149,19 +155,11 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
 
     merged_df = fetch_merged_df(files)
     merged_df = merged_df.loc[merged_df['item_id'] == choosed_sku]
-    ##print(merged_df)
-    print(run_inference_on_sku(merged_df))
+    # print(merged_df)
+    # print(run_inference_on_sku(merged_df))
     
-    time.sleep(3)
-    return {"message": "CSV файл успешно загружен! Прогнозирование"
-     , 
-    "plots": plots,
-    "metrics": {
-        "accuracy": 0.87,
-        "recall": 0.7
-    },
-    "skus" : sorted(skus)
-    }
+    return fetch_prediction(merged_df)
+
 
 @app.post("/analytics/")
 async def analytics(files: List[UploadFile] = File(...), prediction_period: int = Form(...), choosed_sku: str = Form(...)):
@@ -170,17 +168,11 @@ async def analytics(files: List[UploadFile] = File(...), prediction_period: int 
     return fetch_analytics(merged_df)
 
 @app.post("/clustering/")
-async def clustering(files: List[UploadFile] = File(...), prediction_period: int = Form(...)):
+async def clustering(choosed_cluster: str = Form()):
     time.sleep(3)
 
     return {"message": "CSV файл успешно загружен! Прогноз по категориям"
      ,
-    "plots": plots,
-    "metrics": {
-        "accuracy": 0.87,
-        "recall": 0.7
-    },
-    "clusters" : sorted(clusters)
     }
 
 

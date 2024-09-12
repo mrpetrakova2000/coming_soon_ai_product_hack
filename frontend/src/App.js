@@ -64,7 +64,7 @@ function App() {
     console.log(predictionPeriod)
     formData.append('prediction_period', Number(predictionPeriod)); // Добавляем выбранный период предсказания
     formData.append('choosed_sku', String(choosedSku)); // Добавляем выбранный период предсказания
-
+    formData.append('choosed_cluster', String(choosedCluster));
 
     try {
       setIsLoading(true)
@@ -83,8 +83,6 @@ function App() {
       console.log(response.data);
       console.log(response.data.message);
       console.log(response.data.plots);
-      console.log("SKUUUUUUUUUs " + response.data.skus);
-      console.log("SKUUUUUUUUUs original " + skus);
     } catch (error) {
       console.error("Ошибка загрузки файла:", error);
       setError(true);
@@ -230,18 +228,18 @@ function App() {
 
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
             (<h3>Выберите продукт:</h3>)}
-          {!error && !isLoading && loaded && files.length > 0 && activeTab == 1 && !allSkusFlag &&
+          {!error && activeTab == 1 && clusters &&
             (<h3>Выберите категорию:</h3>)}
 
-          {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
+          {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag && skus &&
             <SkusSearchDisplay data={skus} onSelect={setChoosedSku} />}
 
-          {!error && !isLoading && loaded && files.length > 0 && activeTab == 1 && !allSkusFlag &&
+          {!error && clusters && activeTab == 1 &&
             <SkusSearchDisplay data={clusters} onSelect={setChoosedCluster} mode="cluster" />}
 
 
           {choosedSku && !allSkusFlag && <h3>Выбранный продукт: {choosedSku}</h3>}
-          {choosedCluster && !allSkusFlag && <h3>Выбранная категория: {choosedCluster}</h3>}
+          {choosedCluster && <h3>Выбранная категория: {choosedCluster}</h3>}
 
           {files.length > 0 && activeTab < 2 &&
             (<h3>Выберите период прогноза:</h3>)}
@@ -256,7 +254,7 @@ function App() {
               <option value="30">1 месяц</option>
             </select>)}
 
-          {files.length > 0 && predictionPeriod && (<button className="upload-button" type="submit">{submitButtonName}</button>)}
+          {((activeTab == 1) || (files.length > 0 && predictionPeriod)) && (<button className="upload-button" type="submit">{submitButtonName}</button>)}
         </form>
       </div>
 

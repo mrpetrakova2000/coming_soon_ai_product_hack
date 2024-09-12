@@ -101,3 +101,53 @@ def plot_sales(data):
             }
         }
     }
+
+def plot_sku_prediction(last_n_days, prediction_data):
+    dates_list_init = last_n_days['date'].tolist() # Преобразуем даты в список
+    sales_list_init = last_n_days['cnt'].tolist()
+    
+    dates_list_predict = [dates_list_init[-1]] + prediction_data['date'].tolist() # Преобразуем даты в список
+    sales_list_predict = [sales_list_init[-1]] + prediction_data['cnt'].tolist()
+    return {
+        'data': [
+            {
+                'x': dates_list_predict,
+                'y': sales_list_predict,
+                'type': 'scatter',
+                'mode': 'lines+markers',
+                'marker': {'color': '#cd78f0'},
+                'name': 'Прогноз'
+            },
+            {
+                'x': dates_list_init,
+                'y': sales_list_init,
+                'type': 'scatter',
+                'mode': 'lines+markers',
+                'marker': {'color': '#000'},
+                'name': 'Реальные данные'
+            }
+        ],
+        'layout': {
+            'width': 800,
+            'height': 400,
+            'title': 'Прогнозирование спроса по выбранному товару',
+            'xaxis': {
+                'title': 'Дата' #,
+                #rangeslider': {
+                #    'visible': True
+                #}
+            },
+            'yaxis': {
+                'title': 'Количество продаж'
+            },
+            'legend': {
+                'orientation': 'h',
+                'yanchor': 'bottom',
+                'y': -0.5,
+                'xanchor': 'center',
+                'x': 0.5
+            }
+        }
+    }
+
+    
