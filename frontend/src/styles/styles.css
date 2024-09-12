@@ -203,17 +203,20 @@ p {
   margin-bottom: 20px;
   /* Отступ снизу */
   width: 100%;
-  /* Занимает всю ширину */
+  align-items: stretch; /* Растягиваем табы по высоте */
 }
 
 .tab {
-  flex: 1;
-  /* Занимает равное пространство */
+  flex: 1; /* Занимает равное пространство */
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s;
-  text-align: center;
-  /* Центрирование текста */
+  text-align: center; /* Центрируем текст по горизонтали */
+  display: flex; /* Используем flexbox для табов */
+  justify-content: center; /* Центрируем текст по горизонтали */
+  align-items: center; /* Центрируем текст по вертикали */
+  height: 100%; /* Устанавливаем высоту таба равной высоте контейнера */
+  min-height: 70px; /* Устанавливаем минимальную высоту таба */
 }
 
 .tab:hover {
