@@ -2,7 +2,7 @@ import pandas as pd
 
 from backend.ml_pipeline.feature_engineering_tools import *
 
-def calculate_features_for_inference(data: pd.DataFrame, params: dict) -> pd.DataFrame:
+def calculate_features_for_inference(data: pd.DataFrame, params: dict, train: bool = True) -> pd.DataFrame:
     # import parameters
     target_column = params.get('target_column', None)
     datetime_column = params.get('datetime_column', None)
@@ -24,7 +24,10 @@ def calculate_features_for_inference(data: pd.DataFrame, params: dict) -> pd.Dat
     data = extract_month(data, datetime_column) if params.get('month') else data
     data = extract_hour(data, datetime_column) if params.get('hour') else data
 
-    data['Y'] = data[target_column].shift(shift)
+    data = data.drop(columns=['date'])
+    if train:
+        data = data.copy()
+        data.loc[:, 'Y'] = data[target_column].shift(shift)
 
     data = data.dropna()
 
