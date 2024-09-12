@@ -9,7 +9,7 @@ from backend.ml_pipeline.configs.feature_params import one_day_params, seven_day
 from backend.ml_pipeline.inference_tools import inference_model_on_sku
 from backend.ml_pipeline.postprocess_predictions import postproces_predictions
 
-print(os.getcwd())
+#print(os.getcwd())
 
 FOLDER_WITH_MODELS = Path('../ml_pipeline/models')
 CLUSTERS = Path('../ml_pipeline/assets/clusters.csv')
