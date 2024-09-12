@@ -1,5 +1,5 @@
 import lightgbm as lgb
-from metrics import lgbm_smape
+from backend.ML.metrics import lgbm_smape
 
 class LGBMModel:
     def __init__(self, params=None):
