@@ -20,8 +20,8 @@ def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
     ### Возвращаем датасет пользователю
         return None
     else:
-        cat_cols = ['item_id', 'store_id', 'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2', 'cashback_store_1', 'cashback_store_2', 'cashback_store_3', 'wday', 'month', 'year']
-        num_cols = ['cnt', 'sell_price']
+        cat_cols = ['item_id', 'store_id', 'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2', 'cashback_store_1', 'cashback_store_2', 'cashback_store_3']
+        num_cols = ['cnt', 'sell_price', 'wday', 'month', 'year']
         for col in cat_cols:
             merged_df.loc[:,col] = merged_df[col].fillna('ffill')
             merged_df.loc[:,col] = merged_df[col].fillna('bfill')
