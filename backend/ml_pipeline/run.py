@@ -1,20 +1,35 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from sklearn.preprocessing import StandardScaler
 
 from backend.ml_pipeline.preprocess_for_inference import calculate_features_for_inference
 from backend.ml_pipeline.configs.feature_params import one_day_params, seven_day_params, thirty_day_params
 from backend.ml_pipeline.inference import inference_model_on_sku
 
+
 FOLDER_WITH_MODELS = Path('backend/ml_pipeline/models')
 CLUSTERS = Path('backend/ml_pipeline/assets/clusters.csv')
+clusters_df = pd.read_csv(CLUSTERS)
 
 def get_feature_vector(data: pd.DataFrame, day=-1) -> np.ndarray:
-    # if day = -1 last day with features will be taken
-    return np.array(data.iloc[day])
+    return np.array(data.iloc[day]) # if day = -1 last day with features will be taken
 
-def get_cluster(data: pd.DataFrame) -> int:
-    pass
+def get_cluster(data: pd.DataFrame, cluster_df: pd.DataFrame) -> int:
+    scaler = StandardScaler()
+    scaler.mean_ = np.array([23.20140492, 14.25831427])
+    scaler.scale_ = np.array([28.19352783, 19.14103925])
+
+    features = ['feature_1', 'feature_2']
+    data_mean_std = np.array([data['cnt'].mean(), data['cnt'].std()]).reshape(1, -1)
+    normalized_data = scaler.transform(data_mean_std)
+
+    cluster_features = cluster_df[features]
+    distances = np.linalg.norm(cluster_features.values - normalized_data, axis=1)
+    closest_cluster_idx = np.argmin(distances)
+
+    return cluster_df.iloc[closest_cluster_idx]['cluster']
+
 
 def run_inference_on_sku(input_data: pd.DataFrame) -> dict:
     
@@ -22,8 +37,8 @@ def run_inference_on_sku(input_data: pd.DataFrame) -> dict:
     inpute_data = pd.read_csv('./item_064.csv')
     data = inpute_data[['cnt', 'date']] 
 
-    #TODO: assign cluster
-    cluster = 0
+    # Assign cluster
+    cluster = get_cluster(data, clusters_df)
 
     # Get features for each granularity value
     data_with_one_day_features = calculate_features_for_inference(data=data, params=one_day_params, train=False)
