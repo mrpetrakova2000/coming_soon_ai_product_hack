@@ -1,4 +1,4 @@
-import React, {useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from 'axios';
 import Plot from 'react-plotly.js';
 import ParametersDisplay from './ParametersDisplay';
@@ -14,23 +14,25 @@ function App() {
   const [message, setMessage] = useState("");
   const [plots, setPlots] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const [allSkusFlag, setAllSkusFlag] = useState(true);
+  const [allSkusFlag, setAllSkusFlag] = useState(false);
   const [choosedSku, setChoosedSku] = useState(null);
   const [skus, setSkus] = useState([]);
-  // const [isSkuChoosed, setIsSkuChoosed] = useState(false);
+  const [choosedCluster, setChoosedCluster] = useState(null);
+  const [clusters, setClusters] = useState([]);
   const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
   const [parameters, setParameters] = useState([])
 
   const tabs = {
-    0: 'Прогноз',
-    1: 'Аналитика',
-    2: 'Кластеризация'
+    0: 'Прогноз по продукту',
+    1: 'Прогноз по категориям',
+    2: 'Аналитика'
   };
 
-  const tabsWithSkusFlag = [0, 1];
+  const tabsWithSkusFlag = [0, 2];
 
   const apiMethod = updateApiMethod();
   const submitButtonName = getSubmitButtonName();
+
   // console.log(allSkusFlag);
   // console.log(skus);
   // console.log(choosedSku);
@@ -71,9 +73,10 @@ function App() {
       });
       setError(false);
       setMessage(response.data.message);
-      setPlots(response.data.plots);
-      setSkus(response.data.skus);
-      setParameters(response.data.parameters)
+      if (response.data.plots) setPlots(response.data.plots);
+      if (response.data.skus) setSkus(response.data.skus);
+      if (response.data.clusters) setClusters(response.data.clusters);
+      if (response.data.parameters) setParameters(response.data.parameters)
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
@@ -108,12 +111,18 @@ function App() {
     setActiveTab(tab);
     setLoaded(false);
     setChoosedSku(null);
-    setAllSkusFlag(true);
+    if (tab == 2) { setAllSkusFlag(true); }
+    else { setAllSkusFlag(false); }
     setSkus(null);
+    setClusters(null);
+    setChoosedCluster(null);
+    setMessage(null);
+    setPlots(null);
+    setParameters(null);
   };
 
-function updateApiMethod() {
-    switch(activeTab) {
+  function updateApiMethod() {
+    switch (activeTab) {
       case 0:
         if (allSkusFlag === true || choosedSku != null) {
           return "prediction";
@@ -121,13 +130,17 @@ function updateApiMethod() {
           return "getSkus";
         }
       case 1:
+        if (allSkusFlag === true || choosedCluster != null) {
+          return "clustering";
+        } else {
+          return "getClusters";
+        }
+      case 2:
         if (allSkusFlag === true || choosedSku != null) {
           return "analytics";
         } else {
           return "getSkus";
         }
-      case 2:
-        return "clustering";
       default:
         console.log("unsupported")
         return;
@@ -135,7 +148,7 @@ function updateApiMethod() {
   }
 
   function getSubmitButtonName() {
-    switch(activeTab) {
+    switch (activeTab) {
       case 0:
         if (allSkusFlag === true || choosedSku != null) {
           return "Получить прогноз";
@@ -143,13 +156,17 @@ function updateApiMethod() {
           return "Получить список продуктов";
         }
       case 1:
+        if (allSkusFlag === true || choosedCluster != null) {
+          return "Получить прогноз по категории";
+        } else {
+          return "Получить список категорий";
+        }
+      case 2:
         if (allSkusFlag === true || choosedSku != null) {
           return "Получить аналитику";
         } else {
           return "Получить список продуктов";
         }
-      case 2:
-        return "Получить кластеризацию";
       default:
         console.log("unsupported")
         return;
@@ -197,41 +214,36 @@ function updateApiMethod() {
             </ul>
           </div>)}
 
-          {files.length > 0 && tabsWithSkusFlag.includes(activeTab) &&
-           (<h3>Прогноз по всем продуктам:</h3>)}
-          {files.length > 0 && tabsWithSkusFlag.includes(activeTab) &&
-          <select className='predict-period'
+          {files.length > 0 && activeTab == 2 &&
+            (<h3>Аналитика по всем продуктам:</h3>)}
+          {files.length > 0 && activeTab == 2 &&
+            <select className='predict-period'
               id="predictionPeriod"
               value={allSkusFlag}
-              onChange={(e) => {setAllSkusFlag(e.target.value === "true");}}
+              onChange={(e) => { setAllSkusFlag(e.target.value === "true"); }}
             >
               <option value={true}>Да</option>
               <option value={false}>Нет</option>
             </select>}
 
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
-           (<h3>Выберите продукт:</h3>)}
+            (<h3>Выберите продукт:</h3>)}
+          {!error && !isLoading && loaded && files.length > 0 && activeTab == 1 && !allSkusFlag &&
+            (<h3>Выберите категорию:</h3>)}
+
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
-          <SkusSearchDisplay skus={skus} onSelect={setChoosedSku}/>
+            <SkusSearchDisplay data={skus} onSelect={setChoosedSku} />}
 
-          /* <select
-              className='predict-period'
-              id="predictionPeriod"
-              value={choosedSku}
-              onChange={(e) => {setChoosedSku(e.target.value);}
-            }
-            >
-              {skus.map((sku, index) => (
-                <option key={index} value={sku} >{sku}</option>
-              ))}
-            </select>} */
+          {!error && !isLoading && loaded && files.length > 0 && activeTab == 1 && !allSkusFlag &&
+            <SkusSearchDisplay data={clusters} onSelect={setChoosedCluster} mode="cluster" />}
 
-          }
+
           {choosedSku && !allSkusFlag && <h3>Выбранный продукт: {choosedSku}</h3>}
+          {choosedCluster && !allSkusFlag && <h3>Выбранная категория: {choosedCluster}</h3>}
 
-          {files.length > 0 && activeTab == 0 &&
+          {files.length > 0 && activeTab < 2 &&
             (<h3>Выберите период прогноза:</h3>)}
-          {files.length > 0 && activeTab == 0 &&
+          {files.length > 0 && activeTab < 2 &&
             (<select className='predict-period'
               id="predictionPeriod"
               value={predictionPeriod}
@@ -247,15 +259,15 @@ function updateApiMethod() {
       </div>
 
       {isLoading && <p>Загрузка ...</p>}
-      
+
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
 
-      {!error && !isLoading && activeTab == 1 && loaded && parameters &&
-      (<div className="container">
-        <h2 className="heading">Отчёт</h2>
-        <ParametersDisplay data={parameters} />
-      </div>)}
+      {!error && !isLoading && activeTab == 2 && loaded && parameters &&
+        (<div className="container">
+          <h2 className="heading">Отчёт</h2>
+          <ParametersDisplay data={parameters} />
+        </div>)}
 
       {!error && !isLoading && loaded && plots &&
         plots.map((plot, index) => (
