@@ -149,6 +149,7 @@ async def prediction(files: List[UploadFile] = File(...), prediction_period: int
 
     merged_df = fetch_merged_df(files)
     merged_df = merged_df.loc[merged_df['item_id'] == choosed_sku]
+    ##print(merged_df)
     print(run_inference_on_sku(merged_df))
     
     time.sleep(3)
