@@ -4,7 +4,10 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import time
+import re
 from typing import List
+from backend.app.analytics import *
+from backend.merging_datasets.merging import merging
 
 # from backend.ML.dataset import LGBMDataset
 # from backend.ML.model import LGBMModel
@@ -98,6 +101,12 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
             }
         }
     }
+
+def fetch_file_by_fullmatch_filename_to_regex(files, regex):
+    for file in files:
+        if re.fullmatch(regex, file.filename):
+            return file
+    return None
 
 plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
