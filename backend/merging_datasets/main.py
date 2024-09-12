@@ -15,5 +15,8 @@ def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
 
     # Merge the datasets
     merged_df = safe_merge(shop_sales_processed, shop_sales_dates_processed, shop_sales_prices_processed)
+    print(merged_df.head())
 
     return merged_df
+
+merging('shop_sales.csv', 'shop_sales_dates.csv', 'shop_sales_prices.csv')

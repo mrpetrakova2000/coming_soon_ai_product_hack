@@ -4,7 +4,7 @@ def load_dataset(df_name):
     try:
         if not df_name.endswith('.csv'):
             raise ValueError("Only CSV files are supported.")
-        df = pd.read_csv(df_name, parse_dates=['date'], index_col=0)
+        df = pd.read_csv(df_name)
         if df.empty:
             raise ValueError(f"The dataset '{df_name}' is empty.")
         if len(df.columns) == 1:
@@ -51,4 +51,3 @@ def safe_merge(shop_sales, shop_sales_dates, shop_sales_prices):
         raise Exception(f"An unexpected error occurred: {e}")
 
     
-
