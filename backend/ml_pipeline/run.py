@@ -60,9 +60,9 @@ def run_inference_on_sku(input_data: pd.DataFrame) -> tuple:
     
     # zip the predictions dates with predictions
     prediction_data = postproces_predictions(data, prediction_1_day, prediction_7_days, prediction_30_days)
-    last_10_days = input_data.iloc[-20:]
+    last_n_days = input_data.iloc[-20:]
 
-    return last_10_days, prediction_data
+    return last_n_days, prediction_data
 
 # UNCOMMENT FOR USING
 # if __name__ == "__main__":
