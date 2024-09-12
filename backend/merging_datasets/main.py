@@ -16,7 +16,7 @@ def merging(shop_sales_path, shop_sales_dates_path, shop_sales_prices_path):
     merged_df = safe_merge(shop_sales_processed, shop_sales_dates_processed, shop_sales_prices_processed)
     merged_df = merged_df.set_index('date').resample('D').apply(lambda x: x).reset_index()
 
-    if len(merged_df[merged_df.cnt == 0]) / len(merged_df) > 0.5 or merged_df.cnt.isna().sum() / len(merged_df) > 0.5:
+    if len(merged_df[merged_df.cnt == 0]) / len(merged_df) > 0.9 or merged_df.cnt.isna().sum() / len(merged_df) > 0.9:
     ### Возвращаем датасет пользователю
         return None
     else:
