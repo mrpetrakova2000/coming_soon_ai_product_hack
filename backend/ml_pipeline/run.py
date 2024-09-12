@@ -5,15 +5,16 @@ from sklearn.preprocessing import StandardScaler
 
 from backend.ml_pipeline.preprocess_for_inference import calculate_features_for_inference
 from backend.ml_pipeline.configs.feature_params import one_day_params, seven_day_params, thirty_day_params
-from backend.ml_pipeline.inference import inference_model_on_sku
-
+from backend.ml_pipeline.inference_tools import inference_model_on_sku
+from backend.ml_pipeline.postprocess_predictions import postproces_predictions
 
 FOLDER_WITH_MODELS = Path('backend/ml_pipeline/models')
 CLUSTERS = Path('backend/ml_pipeline/assets/clusters.csv')
 clusters_df = pd.read_csv(CLUSTERS)
 
 def get_feature_vector(data: pd.DataFrame, day=-1) -> np.ndarray:
-    return np.array(data.iloc[day]) # if day = -1 last day with features will be taken
+    """Return the feature vector (as a 2D array) for a given day, with day = -1 returning the last day."""
+    return np.array([data.iloc[day].values])  # Return 2D array with the features of the selected day
 
 def get_cluster(data: pd.DataFrame, cluster_df: pd.DataFrame) -> int:
     scaler = StandardScaler()
@@ -31,30 +32,40 @@ def get_cluster(data: pd.DataFrame, cluster_df: pd.DataFrame) -> int:
     return cluster_df.iloc[closest_cluster_idx]['cluster']
 
 
-def run_inference_on_sku(input_data: pd.DataFrame) -> dict:
-    
-    #TODO: run data preprocessing -> merged_df (pd.Dataframe)
-    inpute_data = pd.read_csv('./item_064.csv')
-    data = inpute_data[['cnt', 'date']] 
+def run_inference_on_sku(input_data: pd.DataFrame) -> tuple:
+    """
+    input_data : pd.Dataframe ; should contain 'cnt' and 'date' columns
+    """
+    data = input_data[['cnt', 'date']] 
 
     # Assign cluster
-    cluster = get_cluster(data, clusters_df)
+    cluster = get_cluster(data.copy(), clusters_df)
 
     # Get features for each granularity value
-    data_with_one_day_features = calculate_features_for_inference(data=data, params=one_day_params, train=False)
-    data_with_seven_day_features = calculate_features_for_inference(data=data, params=seven_day_params, train=False)
-    data_with_thirty_day_features = calculate_features_for_inference(data=data, params=thirty_day_params, train=False)
+    data_with_one_day_features = calculate_features_for_inference(data=data.copy(), params=one_day_params, train=False)
+    data_with_seven_day_features = calculate_features_for_inference(data=data.copy(), params=seven_day_params, train=False)
+    data_with_thirty_day_features = calculate_features_for_inference(data=data.copy(), params=thirty_day_params, train=False)
 
     # Get feature vectors 
     feature_vector_gran_1 = get_feature_vector(data_with_one_day_features)
     feature_vector_gran_7 = get_feature_vector(data_with_seven_day_features)
     feature_vector_gran_30 = get_feature_vector(data_with_thirty_day_features)
 
-    # inference and save to prediction
-    predictions = {
-        1: inference_model_on_sku(feature_vector_gran_1, 1, cluster, FOLDER_WITH_MODELS),
-        7: inference_model_on_sku(feature_vector_gran_7, 7, cluster, FOLDER_WITH_MODELS),
-        30: inference_model_on_sku(feature_vector_gran_30, 30, cluster, FOLDER_WITH_MODELS),
-    }
+    # print(feature_vector_gran_30)
 
-    return predictions
+    # Make predictions
+    prediction_1_day = inference_model_on_sku(feature_vector_gran_1, 1, cluster, FOLDER_WITH_MODELS)
+    prediction_7_days = inference_model_on_sku(feature_vector_gran_7, 7, cluster, FOLDER_WITH_MODELS)
+    prediction_30_days = inference_model_on_sku(feature_vector_gran_30, 30, cluster, FOLDER_WITH_MODELS)
+    
+    # zip the predictions dates with predictions
+    prediction_data = postproces_predictions(data, prediction_1_day, prediction_7_days, prediction_30_days)
+    last_10_days = input_data.iloc[-20:]
+
+    return last_10_days, prediction_data
+
+# UNCOMMENT FOR USING
+# if __name__ == "__main__":
+#     inpute_data = pd.read_csv('./item_064.csv')
+#     initial_data, prediction_data = run_inference_on_sku(inpute_data)
+#     print(prediction_data)

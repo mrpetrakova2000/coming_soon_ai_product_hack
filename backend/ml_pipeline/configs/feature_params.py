@@ -24,8 +24,6 @@ seven_day_params = {
         'hour': False                 
 }
 
-
-
 thirty_day_params = {
         'target_column': 'cnt',
         'datetime_column': 'date',
