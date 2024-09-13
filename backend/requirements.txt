@@ -6,3 +6,4 @@ python-multipart
 pandas
 scikit-learn
 lightgbm
+plotly
