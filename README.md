@@ -8,7 +8,7 @@ Open project folder in terminal. Use command below to create and run containers 
 ```
 docker-compose up
 ```
-Show all containers
+<!-- Show all containers
 ```
 docker ps -a
 ```
@@ -31,7 +31,7 @@ docker-compose start
 Run certain container previously stopped:
 ```
 docker start <container-name>
-```
+``` -->
 #### Run manually
 Frontend  
 Open ./frontend in terminal. Use commands:

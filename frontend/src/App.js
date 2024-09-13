@@ -188,6 +188,7 @@ function App() {
           ))}
         </div>
         <form onSubmit={handleSubmit}>
+        {activeTab != 1 && 
           <div className='drop-area'>
             {drag
               ? <div className='files-down'
@@ -202,9 +203,9 @@ function App() {
                 onDragOver={e => dragStartHandler(e)}
               > <p>Переместите CSV файлы, чтобы загрузить </p></div>
             }
-          </div>
+          </div>}
 
-          {files.length > 0 && (<div>
+          {activeTab != 1 && files.length > 0 && (<div>
             <h3>Выбранные файлы:</h3>
             <ul className='files-list'>
               {files.map((file, index) => (
@@ -262,7 +263,7 @@ function App() {
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
 
-      {!error && !isLoading && activeTab == 2 && loaded && parameters &&
+      {!error && !isLoading && activeTab == 2 && loaded && parameters && 
         (<div className="container">
           <h2 className="heading">Отчёт</h2>
           <ParametersDisplay data={parameters} />
