@@ -45,16 +45,18 @@ def fetch_analytics(data, data_all_sku):
     max_holiday_revenue = holiday_revenue.groupby('event_name_1')['revenue'].sum().max()
     max_holiday_name = holiday_revenue.groupby('event_name_1')['revenue'].sum().idxmax()
 
-    # 9. Среднее количество продаж за месяц
-    average_sales_per_month = data_all_sku.groupby(['year', 'month'])['cnt'].mean()
+    # 9. Среднее количество продаж за год
+    average_sales_per_year = data_all_sku.groupby('year')['cnt'].sum().mean()
 
-    # 10. Среднее количество продаж за год
-    average_sales_per_year = data_all_sku.groupby('year')['cnt'].mean()
+    # 10. Среднее количество продаж за месяц
+    average_sales_per_month = data_all_sku.groupby(['year', 'month'])['cnt'].sum().mean()
 
+    # 11. Среднее количество продаж за день
+    average_sales_per_day = data_all_sku.groupby(['date'])['cnt'].sum().mean()
 
     return {"message": "CSV файл успешно загружен! Аналитика"
      ,
-    "plots": [plot_sales(data), plot_sales_speed_dynamics(data), plot_sales_peaks_area_grid(data),
+    "plots": [plot_sales(data), plot_sales_speed_dynamics(data), 
         plot_sales_peaks_months_line(data)],
     "parameters": [
         { "Анализ продаж": { "Общая выручка": f"{revenue.sum():.2f}", 
@@ -68,8 +70,9 @@ def fetch_analytics(data, data_all_sku):
                             "Максимальная выручка за год": f"{max_yearly_revenue:.2f} ({max_year})",
                             "Максимальная выручка за день": f"{max_daily_revenue:.2f} ({max_daily_date})", 
                             "Максимальная выручка в праздник": f"{max_holiday_revenue:.2f} ({max_holiday_name})",
+                            "Среднее количество продаж за год": f"{average_sales_per_year.mean():.2f}",
                             "Среднее количество продаж за месяц": f"{average_sales_per_month.mean():.2f}",
-                            "Среднее количество продаж за год": f"{average_sales_per_year.mean():.2f}"
+                            "Среднее количество продаж за день": f"{average_sales_per_day.mean():.2f}",
         }}
     ]
     }

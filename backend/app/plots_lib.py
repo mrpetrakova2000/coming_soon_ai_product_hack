@@ -27,8 +27,8 @@ def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name
             }
         ],
         'layout': {
-            'width': 800,
-            'height': 400,
+            'width': 1000,
+            'height': 600,
             'title': title,
             'xaxis': {
                 'title': x_axis_title #,
@@ -72,8 +72,8 @@ def plot_sales(data):
             }
         ],
         'layout': {
-            'width': 800,
-            'height': 400,
+            'width': 1000,
+            'height': 600,
             'title': 'Количество продаж товара',
             'xaxis': {
                 'title': 'Дата' #,
@@ -124,8 +124,8 @@ def plot_sku_prediction(last_n_days, prediction_data):
             }
         ],
         'layout': {
-            'width': 800,
-            'height': 400,
+            'width': 1000,
+            'height': 600,
             'title': 'Прогнозирование спроса по выбранному товару',
             'xaxis': {
                 'title': 'Дата' #,
@@ -176,8 +176,8 @@ def plot_cluster_prediction(prev_data, one_day_pred, seven_days_pred, thirty_day
             }
         ],
         'layout': {
-            'width': 800,
-            'height': 400,
+            'width': 1000,
+            'height': 600,
             'title': 'Прогнозирование спроса по выбранной категории',
             'xaxis': {
                 'title': 'Дата' #,
@@ -371,8 +371,8 @@ def plot_sales_speed_dynamics(data):
             }
         ],
         'layout': {
-            'width': 800,
-            'height': 400,
+            'width': 1000,
+            'height': 600,
             'title': 'Динамика продаж товара',
             'xaxis': {
                 'title': 'Дата' #,
@@ -421,96 +421,96 @@ def sales_pipeline_peaks_months(dates, sales, period='M'):
 
     return monthly_peaks.index, monthly_peaks['Sales']
 
-##################### 4.1 Диаграмма с накоплением (Area Chart) — по годам сетка ######################
+# ##################### 4.1 Диаграмма с накоплением (Area Chart) — по годам сетка ######################
 
-def plot_sales_peaks_area_grid(data):
-    """
-    Строит диаграмму пиков продаж по месяцам в виде сетки по годам и возвращает словарь для использования в JavaScript.
-    """
+# def plot_sales_peaks_area_grid(data):
+#     """
+#     Строит диаграмму пиков продаж по месяцам в виде сетки по годам и возвращает словарь для использования в JavaScript.
+#     """
 
-    # Преобразование колонок 'date' и 'cnt' в списки
-    dates_list = data['date'].tolist()  # Преобразуем даты в список
-    sales_list = data['cnt'].tolist()    # Преобразуем количество продаж в список
+#     # Преобразование колонок 'date' и 'cnt' в списки
+#     dates_list = data['date'].tolist()  # Преобразуем даты в список
+#     sales_list = data['cnt'].tolist()    # Преобразуем количество продаж в список
 
-    # Вызов пайплайна для вычисления пиков продаж по месяцам
-    processed_dates, monthly_peaks = sales_pipeline_peaks_months(dates_list, sales_list, period='M')
+#     # Вызов пайплайна для вычисления пиков продаж по месяцам
+#     processed_dates, monthly_peaks = sales_pipeline_peaks_months(dates_list, sales_list, period='M')
 
-    # Преобразуем даты и создаем DataFrame для удобства фильтрации по годам
-    df = pd.DataFrame({'Date': processed_dates, 'Sales': monthly_peaks})
-    df['Year'] = df['Date'].dt.year
-    unique_years = df['Year'].unique()
+#     # Преобразуем даты и создаем DataFrame для удобства фильтрации по годам
+#     df = pd.DataFrame({'Date': processed_dates, 'Sales': monthly_peaks})
+#     df['Year'] = df['Date'].dt.year
+#     unique_years = df['Year'].unique()
 
-    # Создаем массив цветов с плавным увеличением яркости
-    base_color = '#cd78f0'
+#     # Создаем массив цветов с плавным увеличением яркости
+#     base_color = '#cd78f0'
     
-    # Создаем массив цветов с увеличением яркости и насыщенности
-    colors = []
-    h, s, v = colorsys.rgb_to_hsv(
-        int('0x{}'.format(base_color[1:3]), 16) / 255,
-        int('0x{}'.format(base_color[3:5]), 16) / 255,
-        int('0x{}'.format(base_color[5:7]), 16) / 255
-    )
+#     # Создаем массив цветов с увеличением яркости и насыщенности
+#     colors = []
+#     h, s, v = colorsys.rgb_to_hsv(
+#         int('0x{}'.format(base_color[1:3]), 16) / 255,
+#         int('0x{}'.format(base_color[3:5]), 16) / 255,
+#         int('0x{}'.format(base_color[5:7]), 16) / 255
+#     )
 
-    for i in range(len(unique_years)):
-        # Увеличиваем насыщенность и яркость на основе индекса
-        s = min(1, s + (0.2 * (i % 2)))  # Увеличиваем насыщенность на 20% для первых 5 графиков
-        v = min(1, v + (0.2 * (i // 2)))  # Увеличиваем яркость на 10% для каждой группы из 5 графиков
+#     for i in range(len(unique_years)):
+#         # Увеличиваем насыщенность и яркость на основе индекса
+#         s = min(1, s + (0.2 * (i % 2)))  # Увеличиваем насыщенность на 20% для первых 5 графиков
+#         v = min(1, v + (0.2 * (i // 2)))  # Увеличиваем яркость на 10% для каждой группы из 5 графиков
         
-        r, g, b = colorsys.hsv_to_rgb(h, s, v)
-        colors.append('#{:02X}{:02X}{:02X}'.format(int(r * 255), int(g * 255), int(b * 255)))
+#         r, g, b = colorsys.hsv_to_rgb(h, s, v)
+#         colors.append('#{:02X}{:02X}{:02X}'.format(int(r * 255), int(g * 255), int(b * 255)))
 
-    # Создаем список для хранения данных для каждого графика
-    plots = []
+#     # Создаем список для хранения данных для каждого графика
+#     plots = []
 
-    # Построение графиков по каждому году
-    for year in unique_years:
-        yearly_data = df[df['Year'] == year]
+#     # Построение графиков по каждому году
+#     for year in unique_years:
+#         yearly_data = df[df['Year'] == year]
 
-        # Создаем данные для графика
-        plot_data = {
-            'x': yearly_data['Date'].dt.strftime('%Y-%m-%d').tolist(),  # Преобразуем даты в строку
-            'y': yearly_data['Sales'].tolist(),
-            'type': 'scatter',
-            'mode': 'lines+markers',
-            'marker': {'color': colors[len(plots)]},  # Установите нужный цвет
-            'name': f'Пики продаж за {year}',
-            'fill': 'tozeroy',
-            'xaxis': {'title': 'Дата'},
-            'yaxis': {'title': str(year)}
-        }
+#         # Создаем данные для графика
+#         plot_data = {
+#             'x': yearly_data['Date'].dt.strftime('%Y-%m-%d').tolist(),  # Преобразуем даты в строку
+#             'y': yearly_data['Sales'].tolist(),
+#             'type': 'scatter',
+#             'mode': 'lines+markers',
+#             'marker': {'color': colors[len(plots)]},  # Установите нужный цвет
+#             'name': f'Пики продаж за {year}',
+#             'fill': 'tozeroy',
+#             'xaxis': {'title': 'Дата'},
+#             'yaxis': {'title': str(year)}
+#         }
 
-        # Добавляем данные графика в список
-        plots.append(plot_data)
+#         # Добавляем данные графика в список
+#         plots.append(plot_data)
 
-    # Создаем макет для графиков
-    layout = {
-        'title': 'Пики продаж по годам',
-        'width': 800,
-        'height': 400,
-        'grid': {
-            'rows': (len(unique_years) + 1) // 2,  # Количество строк
-            'cols': 2,  # Количество столбцов
-            'pattern': 'independent'
-        },
-        'legend': {
-                'orientation': 'h',
-                'yanchor': 'bottom',
-                'y': -0.5,
-                'xanchor': 'center',
-                'x': 0.5
-            }
-    }
+#     # Создаем макет для графиков
+#     layout = {
+#         'title': 'Пики продаж по годам',
+#         'width': 800,
+#         'height': 400,
+#         'grid': {
+#             'rows': (len(unique_years) + 1) // 2,  # Количество строк
+#             'cols': 2,  # Количество столбцов
+#             'pattern': 'independent'
+#         },
+#         'legend': {
+#                 'orientation': 'h',
+#                 'yanchor': 'bottom',
+#                 'y': -0.5,
+#                 'xanchor': 'center',
+#                 'x': 0.5
+#             }
+#     }
 
-    return {
-        'data': plots,
-        'layout': layout
-    }
+#     return {
+#         'data': plots,
+#         'layout': layout
+#     }
 
 ##################### 4.3 Обычный ######################
 
 def plot_sales_peaks_months_line(data):
-    dates_list = data['date'].tolist()  # Преобразуем даты в список
-    sales_list = data['cnt'].tolist()    # Преобразуем количество продаж в список
+    dates_list = data['date'].tolist()#[max((len(data)-4*SIZE), 0):]  # Преобразуем даты в список
+    sales_list = data['cnt'].tolist()#[max((len(data)-4*SIZE), 0):]    # Преобразуем количество продаж в список
 
     # Вызов пайплайна для вычисления пиков продаж по месяцам
     processed_dates, monthly_peaks = sales_pipeline_peaks_months(dates_list, sales_list, period='MS')
@@ -522,7 +522,7 @@ def plot_sales_peaks_months_line(data):
         'type': 'scatter',
         'mode': 'lines+markers',
         'line': {'color': 'blue'},
-        'marker': {'size': 8, 'color': 'blue'},
+        'marker': {'size': 8, 'color': '#cd78f0'},
         'name': 'Пики продаж'
     }
 
@@ -545,8 +545,8 @@ def plot_sales_peaks_months_line(data):
         'yaxis': {'title': "Максимальные продажи (единиц/месяц)"},
         'annotations': annotations,
         'template': "plotly_white",
-        'width': 800,
-        'height': 400,
+        'width': 1000,
+        'height': 600,
     }
 
     return {
