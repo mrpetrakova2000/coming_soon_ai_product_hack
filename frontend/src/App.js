@@ -86,7 +86,7 @@ function App() {
     } catch (error) {
       console.error("Ошибка загрузки файла:", error);
       setError(true);
-      setMessage("Ошибка загрузки файла");
+      setMessage("Ошибка");
     } finally {
       setIsLoading(false);
       setLoaded(true);
@@ -111,8 +111,7 @@ function App() {
     setActiveTab(tab);
     setLoaded(false);
     setChoosedSku(null);
-    if (tab == 2) { setAllSkusFlag(true); }
-    else { setAllSkusFlag(false); }
+    setAllSkusFlag(false); 
     setSkus(null);
     setClusters(null);
     setChoosedCluster(null);
@@ -214,7 +213,7 @@ function App() {
             </ul>
           </div>)}
 
-          {files.length > 0 && activeTab == 2 &&
+          {/* {files.length > 0 && activeTab == 2 &&
             (<h3>Аналитика по всем продуктам:</h3>)}
           {files.length > 0 && activeTab == 2 &&
             <select className='predict-period'
@@ -224,7 +223,7 @@ function App() {
             >
               <option value={true}>Да</option>
               <option value={false}>Нет</option>
-            </select>}
+            </select>} */}
 
           {!error && !isLoading && loaded && files.length > 0 && tabsWithSkusFlag.includes(activeTab) && !allSkusFlag &&
             (<h3>Выберите продукт:</h3>)}
@@ -241,7 +240,7 @@ function App() {
           {choosedSku && !allSkusFlag && <h3>Выбранный продукт: {choosedSku}</h3>}
           {choosedCluster && <h3>Выбранная категория: {choosedCluster}</h3>}
 
-          {files.length > 0 && activeTab < 2 &&
+          {/* {files.length > 0 && activeTab < 2 &&
             (<h3>Выберите период прогноза:</h3>)}
           {files.length > 0 && activeTab < 2 &&
             (<select className='predict-period'
@@ -252,7 +251,7 @@ function App() {
               <option value="1">1 день</option>
               <option value="7">1 неделя</option>
               <option value="30">1 месяц</option>
-            </select>)}
+            </select>)} */}
 
           {((activeTab == 1) || (files.length > 0 && predictionPeriod)) && (<button className="upload-button" type="submit">{submitButtonName}</button>)}
         </form>

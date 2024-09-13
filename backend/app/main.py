@@ -9,6 +9,7 @@ import csv
 from typing import List
 from backend.app.analytics import *
 from backend.app.prediction import *
+from backend.app.cluster_prediction import *
 from backend.merging_datasets.main import merging
 
 
@@ -49,61 +50,6 @@ app.add_middleware(
 # with open("app/churn_model.pkl", "rb") as f:
 #     model = pickle.load(f)
 
-skus = ["Один", "Два", "Три", "Четыре", "Пять", "Шесть", "Семь", "Восемь"]
-clusters = ["Хлеб", "Мясная продукция", "Молочная продукция", "Детское питание"]
-
-x1 = ['2013-10-04 22:23:00', '2013-10-05 22:23:00', '2013-10-06 22:23:00']
-y1 = [1, 3, 6]
-x2 = ['2013-10-06 22:23:00', '2013-10-07 22:23:00', '2013-10-08 22:23:00', '2013-10-09 22:23:00']
-y2 = [6, 5, 3, 6]
-title = 'Прогнозирование продаж товара X'
-x_axis_title = 'Дата'
-y_axis_title = 'Число продаж'
-trace1_name = 'Реальные данные'
-trace2_name = 'Прогноз'
-
-def standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name='Trace 1', trace2_name='Trace 2'):
-    return {
-        'data': [
-            {
-                'x': x1,
-                'y': y1,
-                'type': 'scatter',
-                'mode': 'lines+markers',
-                'marker': {'color': '#000'},
-                'name': trace1_name
-            },
-            {
-                'x': x2,
-                'y': y2,
-                'type': 'scatter',
-                'mode': 'lines+markers',
-                'marker': {'color': '#cd78f0'},
-                'name': trace2_name
-            }
-        ],
-        'layout': {
-            'width': 800,
-            'height': 400,
-            'title': title,
-            'xaxis': {
-                'title': x_axis_title #,
-                #rangeslider': {
-                #    'visible': True
-                #}
-            },
-            'yaxis': {
-                'title': y_axis_title
-            },
-            'legend': {
-                'orientation': 'h',
-                'yanchor': 'bottom',
-                'y': -0.5,
-                'xanchor': 'center',
-                'x': 0.5
-            }
-        }
-    }
 
 # plots = [standart_plot(x1, y1, x2, y2, title, x_axis_title, y_axis_title, trace1_name, trace2_name)]
 
@@ -170,10 +116,7 @@ async def analytics(files: List[UploadFile] = File(...), prediction_period: int 
 @app.post("/clustering/")
 async def clustering(choosed_cluster: str = Form()):
     time.sleep(3)
-
-    return {"message": "CSV файл успешно загружен! Прогноз по категориям"
-     ,
-    }
+    return fetch_cluster_prediction(choosed_cluster)
 
 
 def fetch_merged_df(files):
