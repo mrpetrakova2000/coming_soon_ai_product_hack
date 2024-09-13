@@ -36,4 +36,4 @@ def predict_by_category(category):
     })
     return prev_data, one_day_pred, seven_days_pred, thirty_days_pred
 
-prev_data, one_day_pred, seven_days_pred, thirty_days_pred = predict_by_category('Красота')
+#prev_data, one_day_pred, seven_days_pred, thirty_days_pred = predict_by_category('Красота')
