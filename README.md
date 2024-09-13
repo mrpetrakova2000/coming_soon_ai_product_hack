@@ -40,7 +40,7 @@ npm install
 npm start
 ```
 Backend
-Open ./backend/app in terminal. Use commands:
+Use commands:
 ```
 fastapi dev main.py
 ```
