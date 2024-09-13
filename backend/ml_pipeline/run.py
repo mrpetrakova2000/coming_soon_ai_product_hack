@@ -11,8 +11,8 @@ from backend.ml_pipeline.postprocess_predictions import postproces_predictions
 
 #print(os.getcwd())
 
-FOLDER_WITH_MODELS = Path('../ml_pipeline/models')
-CLUSTERS = Path('../ml_pipeline/assets/clusters.csv')
+FOLDER_WITH_MODELS = Path('backend/ml_pipeline/models')
+CLUSTERS = Path('backend/ml_pipeline/assets/clusters.csv')
 clusters_df = pd.read_csv(CLUSTERS)
 
 def get_feature_vector(data: pd.DataFrame, day=-1) -> np.ndarray:
