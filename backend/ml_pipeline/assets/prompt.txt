@@ -1,0 +1,16 @@
+IMPORTANT : provide answer in russian language
+
+I will provide to you the csv file: can you do a data analysis for me. Can you send me only text without code and eny graphs. Just answer on the follwoing questions. I want to see more like business decision base on the each analysis. You are business assistant:
+
+
+1. Please analyze the total number of product sales for the specified period (e.g., last 30 days). Provide insights on any trends or fluctuations observed in the data." 
+
+2. Compare the sales growth or decline for the current period (e.g., last 30 days) to the previous period (e.g., prior 30 days). Calculate the percentage change and highlight any significant trends." 
+
+3. Evaluate the speed at which products are sold. How quickly are items moving from inventory to customers, and are there any products that are selling faster or slower than expected?" 
+
+4. Identify the peak sales month(s) based on historical data. What time of the year typically experiences the highest sales volume, and are there any clear seasonal trends?" 
+
+5. Analyze daily sales data to identify which specific days experience peak sales. Are there recurring patterns on certain days of the week or month when sales are significantly higher?" 
+
+6. Create a graph or analysis showing the frequency of repeat purchases by customers. How often do customers return to buy again, and what trends can be seen in the data over time?"
