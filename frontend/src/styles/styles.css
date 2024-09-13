@@ -40,7 +40,7 @@ h1 {
 .form-container {
   width: 100%;
   /* Занимает всю ширину */
-  max-width: 800px;
+  max-width: 1000px;
   /* Максимальная ширина контейнера */
 }
 
@@ -157,7 +157,7 @@ p {
 .plot {
   margin-top: 30px;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
 }
 
 .remove-file {
@@ -238,8 +238,8 @@ p {
 }
 
 .report-theme-container {
-  max-width: 800px;
-  min-width: 800px;
+  max-width: 1000px;
+  min-width: 1000px;
   margin-bottom: 20px;
 }
 
@@ -284,7 +284,7 @@ p {
 
 .dropdown {
   position: relative;
-  width: 300px; /* Ширина родительского контейнера */
+  width: 500px; /* Ширина родительского контейнера */
 }
 
 input {
@@ -300,7 +300,7 @@ input {
   margin: 5px 0 0 0;
   border: 1px solid #ccc;
   border-radius: 4px;
-  max-height: 200px; /* Максимальная высота списка */
+  max-height: 300px; /* Максимальная высота списка */
   overflow-y: auto; /* Прокрутка при переполнении */
   position: absolute; /* Позволяет располагать список над другими элементами */
   background-color: white; /* Цвет фона списка */
