@@ -42,7 +42,7 @@ npm start
 Backend
 Open project folder in terminal.Use commands:
 ```
-RUN pip install --no-cache-dir --upgrade -r backend/requirements.txt
+pip install --no-cache-dir --upgrade -r backend/requirements.txt
 fastapi dev backend/app/main.py
 ```
 Or uncomment end of file backend/app/main.py and use
