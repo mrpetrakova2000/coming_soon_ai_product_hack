@@ -39,7 +39,7 @@ Open ./frontend in terminal. Use commands:
 npm install
 npm start
 ```
-Backend
+Backend  
 Open project folder in terminal.Use commands:
 ```
 pip install --no-cache-dir --upgrade -r backend/requirements.txt
