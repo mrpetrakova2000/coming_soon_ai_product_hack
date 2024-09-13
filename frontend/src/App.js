@@ -3,6 +3,7 @@ import axios from 'axios';
 import Plot from 'react-plotly.js';
 import ParametersDisplay from './ParametersDisplay';
 import SkusSearchDisplay from './SkusSearchDisplay';
+import MySubplots from './MySubplots';
 
 
 function App() {
@@ -111,7 +112,7 @@ function App() {
     setActiveTab(tab);
     setLoaded(false);
     setChoosedSku(null);
-    setAllSkusFlag(false); 
+    setAllSkusFlag(false);
     setSkus(null);
     setClusters(null);
     setChoosedCluster(null);
@@ -172,11 +173,15 @@ function App() {
     }
   }
 
+
+
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
       <div className='form-container'>
+
         <div className="tabs">
+
           {Object.keys(tabs).map((tab) => (
             <div
               key={tab}
@@ -188,22 +193,22 @@ function App() {
           ))}
         </div>
         <form onSubmit={handleSubmit}>
-        {activeTab != 1 && 
-          <div className='drop-area'>
-            {drag
-              ? <div className='files-down'
-                onDragStart={e => dragStartHandler(e)}
-                onDragLeave={e => dragLeaveHandler(e)}
-                onDragOver={e => dragStartHandler(e)}
-                onDrop={e => handleFileChange(e)}
-              > <p>Отпустите CSV файлы, чтобы загрузить </p></div>
-              : <div className='files-up'
-                onDragStart={e => dragStartHandler(e)}
-                onDragLeave={e => dragLeaveHandler(e)}
-                onDragOver={e => dragStartHandler(e)}
-              > <p>Переместите CSV файлы, чтобы загрузить </p></div>
-            }
-          </div>}
+          {activeTab != 1 &&
+            <div className='drop-area'>
+              {drag
+                ? <div className='files-down'
+                  onDragStart={e => dragStartHandler(e)}
+                  onDragLeave={e => dragLeaveHandler(e)}
+                  onDragOver={e => dragStartHandler(e)}
+                  onDrop={e => handleFileChange(e)}
+                > <p>Отпустите CSV файлы, чтобы загрузить </p></div>
+                : <div className='files-up'
+                  onDragStart={e => dragStartHandler(e)}
+                  onDragLeave={e => dragLeaveHandler(e)}
+                  onDragOver={e => dragStartHandler(e)}
+                > <p>Переместите CSV файлы, чтобы загрузить </p></div>
+              }
+            </div>}
 
           {activeTab != 1 && files.length > 0 && (<div>
             <h3>Выбранные файлы:</h3>
@@ -263,7 +268,7 @@ function App() {
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
 
-      {!error && !isLoading && activeTab == 2 && loaded && parameters && 
+      {!error && !isLoading && activeTab == 2 && loaded && parameters &&
         (<div className="container">
           <h2 className="heading">Отчёт</h2>
           <ParametersDisplay data={parameters} />
@@ -271,11 +276,15 @@ function App() {
 
       {!error && !isLoading && loaded && plots &&
         plots.map((plot, index) => (
-          <Plot
-            key={index}
-            data={plot.data}
-            layout={plot.layout}
-          />))
+          <div key={index} style={{ margin: '15px 0' }}>
+            <Plot
+              key={index}
+              data={plot.data}
+              layout={plot.layout}
+              config={{ responsive: true }}
+            />
+         </div>))
+
       }
     </div>
   );

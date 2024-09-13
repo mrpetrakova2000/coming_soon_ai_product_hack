@@ -57,7 +57,9 @@ def fetch_analytics(data, data_all_sku):
     return {"message": "CSV файл успешно загружен! Аналитика"
      ,
     "plots": [plot_sales(data), plot_sales_speed_dynamics(data), 
-        plot_sales_peaks_months_line(data)],
+        plot_sales_peaks_months_line(data_all_sku), plot_store_revenue_grid(data_all_sku), 
+        plot_weekday_weekend_sales_by_month(data_all_sku), plot_sales_comparison(data),
+        plot_sales_by_event(data)],
     "parameters": [
         { "Анализ продаж": { "Общая выручка": f"{revenue.sum():.2f}", 
                             "Магазин с максимальными продажами за все время": max_sales_store, 

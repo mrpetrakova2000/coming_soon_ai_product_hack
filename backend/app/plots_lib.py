@@ -3,6 +3,10 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import colorsys
+from plotly.io import to_json
+import json
+from plotly.utils import PlotlyJSONEncoder
+import math
 
 SIZE = 100
 
@@ -521,7 +525,7 @@ def plot_sales_peaks_months_line(data):
         'y': monthly_peaks.tolist(),     # Пики продаж для оси Y
         'type': 'scatter',
         'mode': 'lines+markers',
-        'line': {'color': 'blue'},
+        'line': {'color': '#a86bc3'},
         'marker': {'size': 8, 'color': '#cd78f0'},
         'name': 'Пики продаж'
     }
@@ -554,6 +558,460 @@ def plot_sales_peaks_months_line(data):
         'layout': layout
     }
 
+
+# ##################### 7.1 Востребованность продукта - общий график для всех магазинов ######################
+
+# # Пайплайн для обработки данных
+# def product_sales_pipeline(data):
+#     """
+#     Пайплайн для обработки данных: подсчёт продаж каждого продукта и выбор топ 5 и bottom 5.
+#     """
+#     # Сгруппируем данные по продуктам и посчитаем общее количество продаж
+#     grouped_data = data.groupby('item_id')['cnt'].sum().reset_index()
+
+#     # Отсортируем данные для получения топ 5 востребованных и топ 5 невостребованных продуктов
+#     top_5 = grouped_data.nlargest(5, 'cnt')  # Топ 5 востребованных
+#     bottom_5 = grouped_data.nsmallest(5, 'cnt')  # Топ 5 невостребованных
+
+#     # Объединяем топ 5 и bottom 5
+#     top_and_bottom_5 = pd.concat([top_5, bottom_5])
+
+#     return top_and_bottom_5
+
+
+# # 2. Функция для построения графика
+# def plot_top_bottom_5_products(data):
+
+#     # Обработка данных через пайплайн
+#     processed_data = product_sales_pipeline(data)
+
+#     """
+#     Построение графика для топ 5 востребованных и топ 5 невостребованных продуктов.
+#     """
+#     # Разделение на топ 5 и bottom 5
+#     top_5 = data.nlargest(5, 'cnt')
+#     bottom_5 = data.nsmallest(5, 'cnt')
+
+#     # Создаем фигуру
+#     fig = go.Figure()
+
+#     # Добавляем бары для топ 5 продуктов
+#     fig.add_trace(go.Bar(
+#         x=top_5['item_id'],
+#         y=top_5['cnt'],
+#         name="Топ 5 востребованных продуктов",
+#         marker_color='green'
+#     ))
+
+#     # Добавляем бары для bottom 5 продуктов
+#     fig.add_trace(go.Bar(
+#         x=bottom_5['item_id'],
+#         y=bottom_5['cnt'],
+#         name="Топ 5 невостребованных продуктов",
+#         marker_color='red'
+#     ))
+
+#     # Настройка оформления графика
+#     fig.update_layout(
+#         title="Топ 5 востребованных и невостребованных продуктов",
+#         xaxis_title="Идентификатор продукта",
+#         yaxis_title="Количество продаж",
+#         template='plotly_white',
+#         xaxis=dict(showgrid=True, gridwidth=1, gridcolor='LightGrey'),
+#         yaxis=dict(showgrid=True, gridwidth=1, gridcolor='LightGrey'),
+#         font=dict(size=14, color='Black'),
+#         height=600,
+#         width=1000,
+#         barmode='group'  # Для группировки столбцов
+#     )
+
+#     #json_fig = to_json(fig)
+#     # json_acceptable_string = json_fig.replace("'", "\"")
+#     # result = json.loads(json_acceptable_string)
+
+#     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+#     json_acceptable_string = graphJSON.replace("'", "\"")
+#     result = json.loads(json_acceptable_string)
+
+   
+#     return result
+
+    
+##################### 7.3 Построение круговой диаграммы востребованности  для каждого магазина ######################
+
+# # Пайплайн для расчета долей продаж каждого товара в магазине
+# def store_sales_share_pipeline(data):
+#     """
+#     Пайплайн для расчета доли продаж товаров по магазинам.
+#     Возвращает долю каждого товара по магазину.
+#     """
+#     grouped_data = data.groupby(['store_id', 'item_id'])['cnt'].sum().reset_index()
+#     total_sales_by_store = grouped_data.groupby('store_id')['cnt'].sum().reset_index()
+
+#     grouped_data = pd.merge(grouped_data, total_sales_by_store, on='store_id', suffixes=('', '_total'))
+#     grouped_data['sales_share'] = grouped_data['cnt'] / grouped_data['cnt_total'] * 100  # Расчет доли в процентах
+
+#     stores_data = {}
+
+#     for store in grouped_data['store_id'].unique():
+#         store_data = grouped_data[grouped_data['store_id'] == store]
+#         stores_data[store] = store_data
+
+#     return stores_data
+
+# # Построение сетки круговых диаграмм
+# def plot_store_sales_share_grid(data):
+#     """
+#     Построение сетки круговых диаграмм для каждого магазина с долями продаж товаров.
+#     """
+#     stores_data = store_sales_share_pipeline(data)
+
+#     num_stores = len(stores_data)
+#     cols = 2  # Фиксируем количество колонок на 2
+#     rows = math.ceil(num_stores / cols)  # Автоматический расчет количества строк
+
+#     fig = make_subplots(rows=rows, cols=cols, subplot_titles=[f"Магазин {store}" for store in stores_data.keys()],
+#                         specs=[[{'type': 'domain'} for _ in range(cols)] for _ in range(rows)])
+
+#     for i, (store, data) in enumerate(stores_data.items()):
+#         row = (i // cols) + 1
+#         col = (i % cols) + 1
+
+#         # Добавляем круговую диаграмму для каждого магазина
+#         fig.add_trace(go.Pie(
+#             labels=data['sales_share']['item_id'],
+#             values=data['sales_share']['sales_share'],
+#             name=f"Магазин {store}",
+#             hole=0.4
+#         ), row=row, col=col)
+
+#     fig.update_layout(
+#         height=600 + (rows * 300),
+#         width=1000,
+#         title_text="Доли продаж товаров по магазинам",
+#         showlegend=False,
+#         template='plotly_white'
+#     )
+
+#     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+#     json_acceptable_string = graphJSON.replace("'", "\"")
+#     result = json.loads(json_acceptable_string)
+#     return result
+
+#######################################################
+##  8 Выручка по магазинам
+#######################################################
+
+import colorsys
+
+# Функция для генерации массива цветов от черного к заданному цвету
+def generate_colors(base_color, num_colors):
+    # Преобразуем базовый цвет в RGB
+    r_base = int(base_color[1:3], 16) / 255
+    g_base = int(base_color[3:5], 16) / 255
+    b_base = int(base_color[5:7], 16) / 255
+
+    # Создаем массив цветов
+    colors = []
+    
+    for i in range(num_colors):
+        # Интерполяция от черного (0, 0, 0) к базовому цвету
+        r = r_base * (i / (num_colors - 1))
+        g = g_base * (i / (num_colors - 1))
+        b = b_base * (i / (num_colors - 1))
+        
+        # Преобразуем обратно в шестнадцатеричный формат
+        colors.append('#{:02X}{:02X}{:02X}'.format(int(r * 255), int(g * 255), int(b * 255)))
+
+    return colors
+
+
+# Функция для расчета выручки по дням и неделям
+def store_revenue_pipeline(data):
+    # Создаем столбец выручки (цена * количество)
+    data['revenue'] = data['sell_price'] * data['cnt']
+
+    # Группируем данные по магазинам, дням и неделям
+    stores_data = {}
+    for store in data['store_id'].unique():
+        store_data = data[data['store_id'] == store]
+
+        # Выручка за каждый день
+        daily_revenue = store_data.groupby('date')['revenue'].sum()
+
+        # Выручка за каждую неделю
+        weekly_revenue = store_data.groupby(pd.Grouper(key='date', freq='W'))['revenue'].sum()
+
+        stores_data[store] = {'daily_revenue': daily_revenue, 'weekly_revenue': weekly_revenue}
+
+    return stores_data
+
+
+# Функция для построения графиков в сетке
+def plot_store_revenue_grid(data):
+
+    # Применяем пайплайн для получения данных по каждому магазину
+    stores_data = store_revenue_pipeline(data)
+    # Определяем количество строк и колонок для сетки графиков
+    rows = len(stores_data)
+    cols = 2  # Одна колонка для дневной выручки, другая для недельной
+    print(stores_data)
+    # Создаем фигуру с сеткой графиков
+    fig = make_subplots(
+        rows=rows, cols=cols,
+        subplot_titles=[f"{store} - Выручка за дни" for store in stores_data.keys()] +
+                       [f"{store} - Выручка за недели" for store in stores_data.keys()],
+        vertical_spacing=0.1
+    )
+
+    # Пример использования
+    base_color = '#cd78f0'
+    num_colors = len(stores_data)  # Количество цветов в градиенте
+    colors = generate_colors(base_color, num_colors)
+
+    # Добавляем графики для каждого магазина
+    row = 1
+    for store, revenues in stores_data.items():
+        # График выручки за дни
+        fig.add_trace(
+            go.Scatter(x=revenues['daily_revenue'].index, y=revenues['daily_revenue'], mode='lines+markers',
+                       name=f'{store} - Выручка за дни', line=dict(color=colors[row - 1])),
+            row=row, col=1
+        )
+
+        # График выручки за недели
+        fig.add_trace(
+            go.Scatter(x=revenues['weekly_revenue'].index, y=revenues['weekly_revenue'], mode='lines+markers',
+                       name=f'{store} - Выручка за недели', line=dict(color=colors[row - 1])),
+            row=row, col=2
+        )
+
+        row += 1
+
+    # Настраиваем оформление графика
+    fig.update_layout(
+        height=rows * 400, width=1000,
+        title_text="Выручка магазина за каждый день и неделю",
+    )
+
+    fig.update_layout(
+        legend=dict(
+            orientation='h',  # Горизонтальная ориентация
+            yanchor='bottom', # Якорь легенды снизу
+            y=-0.1,           # Позиция легенды ниже графиков
+            xanchor='center', # Центрирование легенды
+            x=0.5             # Позиция легенды по центру
+        )
+    )
+
+    graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
+
+
+#######################################################
+##  9. Сравнение продаж пр будням и выходным
+#######################################################
+
+# Функция для определения будний это день или выходной
+def is_weekend(date):
+    return date.weekday() >= 5  # 5 и 6 это суббота и воскресенье
+
+
+# Пайплайн для обработки данных и получения продаж по будним и выходным дням за каждый месяц
+def sales_weekday_weekend_by_month_pipeline(dates, sales_list):
+    dates = pd.to_datetime(dates)
+    # Отбираем только данные за 2015 год
+    mask_2015 = dates.year == 2015
+    dates = dates[mask_2015]
+    sales_list = pd.Series(sales_list)[mask_2015].tolist()
+
+    # Создаем DataFrame для удобной группировки
+    df = pd.DataFrame({"date": dates, "sales": sales_list})
+
+    # Добавляем колонку "Месяц"
+    df['month'] = df['date'].dt.month
+
+    # Группируем данные по месяцам и подсчитываем продажи по будням и выходным
+    monthly_sales = df.groupby('month').apply(lambda x: {
+        'weekday_sales': sum(x['sales'][~x['date'].apply(is_weekend)]),
+        'weekend_sales': sum(x['sales'][x['date'].apply(is_weekend)])
+    })
+
+    return monthly_sales
+
+
+# Функция для построения графика
+def plot_weekday_weekend_sales_by_month(data):
+    months = [i for i in range(1,13)]  # Список месяцев
+
+    dates_list = data['date'].tolist()
+    sales_list = data['cnt'].tolist()
+
+    monthly_sales = sales_weekday_weekend_by_month_pipeline(dates_list, sales_list)
+
+    # Разбиваем данные на будние и выходные
+    weekday_sales = [monthly_sales[m]['weekday_sales'] for m in months]
+    weekend_sales = [monthly_sales[m]['weekend_sales'] for m in months]
+
+    # Создание фигуры
+    fig = go.Figure()
+
+    # Добавление столбцов для будних дней
+    fig.add_trace(go.Bar(
+        x=months,
+        y=weekday_sales,
+        name='Будни',
+        marker_color='black'
+    ))
+
+    # Добавление столбцов для выходных дней
+    fig.add_trace(go.Bar(
+        x=months,
+        y=weekend_sales,
+        name='Выходные',
+        marker_color='#cd78f0'
+    ))
+
+    # Настройка макета
+    fig.update_layout(
+        barmode='stack',  # Режим отображения столбцов
+        xaxis_title='Месяц',
+        yaxis_title='Объем продаж',
+        title='Продажи по будним и выходным дням по месяцам 2015 года (по SKU)',
+        legend_title='Дни недели',
+        height=600,
+        width=1000
+    )
+
+    graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
+
+#######################################################
+##  10. Анализ по праздникам
+#######################################################
+
+# Функция для проверки, идет ли праздние в день
+def is_event_day(row):
+    return row['event_name_1'] != 'Unknown' or row['event_name_2'] != 'Unknown'
+
+# Пайплайн для разделения данных на периоды с праздниками и без
+def sales_with_without_events_pipeline(data):
+    # Определяем дни с акциями
+    data['is_event_day'] = data.apply(is_event_day, axis=1)
+
+    # Продажи в дни с праздгником
+    sales_with_events = data[data['is_event_day']]['cnt'].sum()
+
+    # Продажи в дни без  праздгника
+    sales_without_events = data[~data['is_event_day']]['cnt'].sum()
+
+    return sales_with_events, sales_without_events
+
+
+# Функция для построения графика сравнения продаж
+def plot_sales_comparison(data):
+    sales_with, sales_without = sales_with_without_events_pipeline(data)
+    labels = ['В день проведения праздника', 'Без праздника']
+    sales_values = [sales_with, sales_without]
+
+    # Создание фигуры
+    fig = go.Figure()
+
+    # Добавление столбцов
+    fig.add_trace(go.Bar(
+        x=labels,
+        y=sales_values,
+        marker_color=['#cd78f0', 'black']  # Цвета для столбцов
+    ))
+
+    # Настройка макета
+    fig.update_layout(
+        title='Сравнение продаж в периоды проведения праздников (по SKU)',
+        xaxis_title='Периоды',
+        yaxis_title='Объем продаж',
+        height=600,
+        width=1000
+    )
+
+    graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
+
+##################### 10.2 Влияние праздников на объем продаж ######################
+
+# Функция для вычисления продаж по праздникам
+def sales_by_event(data):
+    # Удаление специальных символов из названий событий
+    data['event_name_1'] = data['event_name_1'].str.replace(r'[^\w\s]', '', regex=True)
+    event_sales = data.groupby('event_name_1')['cnt'].sum().reset_index()
+    event_sales = event_sales[event_sales['event_name_1'] != 'Unknown']
+
+    return event_sales
+
+def plot_sales_by_event(data):
+    event_sales = sales_by_event(data)
+    # Создание фигуры
+    fig = go.Figure()
+
+    # Добавление столбцов
+    fig.add_trace(go.Bar(
+        x=event_sales['event_name_1'],
+        y=event_sales['cnt'],
+        marker_color='#cd78f0'  # Цвет столбцов
+    ))
+
+    # Настройка макета
+    fig.update_layout(
+        title='Влияние праздников на объем продаж (по SKU)',
+        xaxis_title='Праздники',
+        yaxis_title='Объем продаж',
+        height=600,
+        width=1000
+    )
+
+    graphJSON = to_json(fig)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
+    event_sales = event_sales[event_sales['event_name_1'] != 'Unknown']
+
+    return event_sales
+
+def plot_sales_by_event(data):
+    event_sales = sales_by_event(data)
+    # Создание фигуры
+    fig = go.Figure()
+
+    # Добавление столбцов
+    fig.add_trace(go.Bar(
+        x=event_sales['event_name_1'],
+        y=event_sales['cnt'],
+        marker_color='#cd78f0'  # Цвет столбцов
+    ))
+
+    # Настройка макета
+    fig.update_layout(
+        title='Влияние праздников на объем продаж (по SKU)',
+        xaxis_title='Праздники',
+        yaxis_title='Объем продаж',
+        height=600,
+        width=1000
+    )
+
+    graphJSON = to_json(fig)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
 
 
 

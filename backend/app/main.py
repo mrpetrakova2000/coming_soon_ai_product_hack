@@ -65,7 +65,6 @@ async def analytics(files: List[UploadFile] = File(...), prediction_period: int 
 
 @app.post("/clustering/")
 async def clustering(choosed_cluster: str = Form()):
-    time.sleep(3)
     return fetch_cluster_prediction(choosed_cluster)
 
 
