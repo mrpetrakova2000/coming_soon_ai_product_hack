@@ -6,6 +6,9 @@ COPY . /backend
 
 ENV PYTHONPATH=/backend
 ENV PYTHONUNBUFFERED=1
+# ENV API_KEY=bnjfkdhcd8788932ech-df99990-1232vefc-fdc
+
+
 
 # List the contents of the /backend directory for debugging
 # RUN dir /s

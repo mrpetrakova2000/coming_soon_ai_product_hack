@@ -3,7 +3,6 @@ import axios from 'axios';
 import Plot from 'react-plotly.js';
 import ParametersDisplay from './ParametersDisplay';
 import SkusSearchDisplay from './SkusSearchDisplay';
-import MySubplots from './MySubplots';
 
 
 function App() {
@@ -20,6 +19,7 @@ function App() {
   const [skus, setSkus] = useState([]);
   const [choosedCluster, setChoosedCluster] = useState(null);
   const [clusters, setClusters] = useState([]);
+  const [chatgptMsg, setChatgptMsg] = useState(null);
   const [activeTab, setActiveTab] = useState(0); // Состояние для активной вкладки
   const [parameters, setParameters] = useState([])
 
@@ -80,6 +80,7 @@ function App() {
       if (response.data.skus) setSkus(response.data.skus);
       if (response.data.clusters) setClusters(response.data.clusters);
       if (response.data.parameters) setParameters(response.data.parameters)
+      if (response.data.chatgpt) setChatgptMsg(response.data.chatgpt)
       console.log(response);
       console.log(response.data);
       console.log(response.data.message);
@@ -119,6 +120,7 @@ function App() {
     setMessage(null);
     setPlots(null);
     setParameters(null);
+    setChatgptMsg(null);
   };
 
   function updateApiMethod() {
@@ -173,15 +175,11 @@ function App() {
     }
   }
 
-
-
   return (
     <div className="App">
       <h1>Napoleon Plan - ваш помощник в бизнесе</h1>
       <div className='form-container'>
-
         <div className="tabs">
-
           {Object.keys(tabs).map((tab) => (
             <div
               key={tab}
@@ -267,6 +265,13 @@ function App() {
 
       {message && <p>{message}</p>}
       {!error && loaded && plots && console.log(plots)}
+
+      {!error && !isLoading && activeTab == 1 && loaded && chatgptMsg &&
+        (<div className="container">
+          <div style={{textAlign: 'left'}}>
+          <p style={{textAlign: 'left'}}>{chatgptMsg}</p>
+          </div>
+        </div>)}
 
       {!error && !isLoading && activeTab == 2 && loaded && parameters &&
         (<div className="container">
