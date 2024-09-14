@@ -1014,7 +1014,37 @@ def plot_sales_by_event(data):
     return result
 
 
+##################### Прогноз продаж для новинки в этой категории ######################
 
+def plot_cluster_launch(data):
+    
+    weeks = data['Week'].tolist()
+    sales = data['Sales'].tolist()
+
+    # Создание фигуры
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=weeks,
+        y=sales,
+        marker_color='#cd78f0',
+        mode='lines+markers'
+    ))
+
+    # Настройка макета
+    fig.update_layout(
+        title='Прогноз продаж для новинки в этой категории',
+        xaxis_title='Неделя',
+        yaxis_title='Объем продаж',
+        height=600,
+        width=1000
+    )
+
+    graphJSON = to_json(fig)
+    json_acceptable_string = graphJSON.replace("'", "\"")
+    result = json.loads(json_acceptable_string)
+
+    return result
 
 
 

@@ -267,9 +267,9 @@ function App() {
       {!error && loaded && plots && console.log(plots)}
 
       {!error && !isLoading && activeTab == 1 && loaded && chatgptMsg &&
-        (<div className="container">
-          <div style={{textAlign: 'left'}}>
-          <p style={{textAlign: 'left'}}>{chatgptMsg}</p>
+        (<div style={{textAlign: 'left', maxWidth: '1000px', width: '100%'}}>
+          <div>
+          <p>{chatgptMsg}</p>
           </div>
         </div>)}
 
